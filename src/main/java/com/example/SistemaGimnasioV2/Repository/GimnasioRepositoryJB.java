@@ -31,7 +31,7 @@ public class GimnasioRepositoryJB {
             "SELECT s.id_subproducto, s.id_categoria, c.nombre_categoria, " +
                     "s.nombre_subproducto, s.precio_individual, s.estado " +
                     "FROM SUBPRODUCTO s JOIN CATEGORIA c ON c.id_categoria = s.id_categoria ";
-
+    /*
     public List<PlanJB> listarPlanes() {
         return jdbc.query(
                 "SELECT id_plan, nombre_plan, descripcion, precio_base, duracion_dias FROM PLAN ORDER BY precio_base",
@@ -42,6 +42,38 @@ public class GimnasioRepositoryJB {
         return jdbc.queryForObject(
                 "SELECT id_plan, nombre_plan, descripcion, precio_base, duracion_dias FROM PLAN WHERE id_plan = ?",
                 new BeanPropertyRowMapper<>(PlanJB.class), idPlan);
+    }
+
+     */
+    public List<String> listarServiciosPorPlan(int idPlan) {
+        String sql = "SELECT s.nombre_subproducto " +
+                "FROM PLAN_SUBPRODUCTO ps " +
+                "JOIN SUBPRODUCTO s ON s.id_subproducto = ps.id_subproducto " +
+                "WHERE ps.id_plan = ? " +
+                "ORDER BY s.id_subproducto";
+        return jdbc.queryForList(sql, String.class, idPlan);
+    }
+
+    public List<PlanJB> listarPlanes() {
+        List<PlanJB> planes = jdbc.query(
+                "SELECT id_plan, nombre_plan, precio_base, duracion_dias FROM PLAN ORDER BY precio_base",
+                new BeanPropertyRowMapper<>(PlanJB.class));
+
+        for (PlanJB plan : planes) {
+            List<String> servicios = listarServiciosPorPlan(plan.getIdPlan());
+            plan.setIncluye(servicios);
+        }
+        return planes;
+    }
+
+    public PlanJB buscarPlan(int idPlan) {
+        PlanJB plan = jdbc.queryForObject(
+                "SELECT id_plan, nombre_plan, precio_base, duracion_dias FROM PLAN WHERE id_plan = ?",
+                new BeanPropertyRowMapper<>(PlanJB.class), idPlan);
+
+        List<String> servicios = listarServiciosPorPlan(idPlan);
+        plan.setIncluye(servicios);
+        return plan;
     }
 
     /*public List<SubproductoJB> listarSubproductos() {

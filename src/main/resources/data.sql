@@ -1,7 +1,7 @@
-INSERT INTO PLAN (id_plan, nombre_plan, descripcion, precio_base, duracion_dias) VALUES
-                                                                                     (1, 'Básico', 'Sala de máquinas y pesas; Wifi gratis; Acceso al dispensador de agua purificada; Uso de casilleros', 90, 30),
-                                                                                     (2, 'Medio', 'Sala de máquinas y pesas; Zona de cardio; Wifi gratis; Acceso al dispensador de agua purificada; Zona de descanso y lounge; Ingreso a las duchas; Uso de casilleros; Equipo de entrenamiento y lavado', 195, 30),
-                                                                                     (3, 'Pro', 'Sala de máquinas y pesas; Zona de cardio; Zona funcional; Wifi gratis; Acceso al dispensador de agua purificada; Zona de descanso y lounge; Estación de carga de celulares; Ingreso a las duchas; Uso de casilleros; Equipo de entrenamiento y lavado; Uso de secadores de cabello; Kit de aseo personal; Acceso a máquinas de relajación muscular; Sauna; Reloj de mano cardiomedidor; Parking de auto', 410, 30);
+INSERT INTO PLAN (id_plan, nombre_plan, precio_base, duracion_dias) VALUES
+                                                                        (1, 'Básico', 90, 30),
+                                                                        (2, 'Medio', 195, 30),
+                                                                        (3, 'Pro', 410, 30);
 
 INSERT INTO CATEGORIA (id_categoria, nombre_categoria, descripcion) VALUES
                                                                         (1, 'Zonas de Entrenamiento', 'Áreas del gimnasio para entrenar'),
@@ -33,6 +33,19 @@ INSERT INTO SUBPRODUCTO (id_subproducto, id_categoria, nombre_subproducto, preci
                                                                                                   (19, 6, 'Parking de auto', 40),
                                                                                                   (20, 6, 'Parking de moto y bicicleta', 15);
 
+-- Plan 1: Básico (S/ 90)
+INSERT INTO PLAN_SUBPRODUCTO (id_plan, id_subproducto) VALUES
+                                                           (1, 1), (1, 4), (1, 5), (1, 9);
+
+-- Plan 2: Medio (S/ 195)
+INSERT INTO PLAN_SUBPRODUCTO (id_plan, id_subproducto) VALUES
+                                                           (2, 1), (2, 2), (2, 4), (2, 5), (2, 6), (2, 8), (2, 9), (2, 10);
+
+-- Plan 3: Pro (S/ 410)
+INSERT INTO PLAN_SUBPRODUCTO (id_plan, id_subproducto) VALUES
+                                                           (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (3, 8),
+                                                           (3, 9), (3, 10), (3, 11), (3, 12), (3, 13), (3, 14), (3, 16), (3, 19);
+
 INSERT INTO CLIENTE (id_cliente, dni, nombre, apellido, telefono, email) VALUES
                                                                              (1, '70112233', 'María', 'Rojas Paucar', '912345001', 'maria.rojas@correo.pe'),
                                                                              (2, '70223344', 'Luis', 'Ccora Yupanqui', '912345002', 'luis.ccora@correo.pe'),
@@ -58,6 +71,7 @@ INSERT INTO MARCACION_ACCESO (id_acceso, id_cliente, id_suscripcion, fecha_acces
 ALTER TABLE PLAN ALTER COLUMN id_plan RESTART WITH 4;
 ALTER TABLE CATEGORIA ALTER COLUMN id_categoria RESTART WITH 7;
 ALTER TABLE SUBPRODUCTO ALTER COLUMN id_subproducto RESTART WITH 21;
+ALTER TABLE PLAN_SUBPRODUCTO ALTER COLUMN id_plan_subproducto RESTART WITH 29;
 ALTER TABLE CLIENTE ALTER COLUMN id_cliente RESTART WITH 5;
 ALTER TABLE CUPON ALTER COLUMN id_cupon RESTART WITH 3;
 ALTER TABLE SUSCRIPCION ALTER COLUMN id_suscripcion RESTART WITH 5;
