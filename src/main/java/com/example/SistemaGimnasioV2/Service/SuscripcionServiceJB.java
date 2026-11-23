@@ -95,7 +95,7 @@ public class SuscripcionServiceJB {
         if (idPlan != null) {
             PlanJB plan = repo.buscarPlan(idPlan);
             resumen.setNombrePlan(plan.getNombrePlan());
-            resumen.setDetalle(plan.getDescripcion());
+            resumen.setDetalle(String.join(";", plan.getIncluye()));
             resumen.setMontoTotal(plan.getPrecioBase());
             dias = plan.getDuracionDias();
         } else {

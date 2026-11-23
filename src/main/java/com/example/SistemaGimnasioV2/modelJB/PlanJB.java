@@ -1,16 +1,14 @@
 package com.example.SistemaGimnasioV2.modelJB;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 
 public class PlanJB {
-
     private Integer idPlan;
     private String nombrePlan;
-    private String descripcion;
     private BigDecimal precioBase;
     private Integer duracionDias;
+    private List<String> incluye;
 
     public Integer getIdPlan() {
         return idPlan;
@@ -26,14 +24,6 @@ public class PlanJB {
 
     public void setNombrePlan(String nombrePlan) {
         this.nombrePlan = nombrePlan;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     public BigDecimal getPrecioBase() {
@@ -53,6 +43,10 @@ public class PlanJB {
     }
 
     public List<String> getIncluye() {
-        return Arrays.asList(descripcion.split(";"));
+        return incluye;
+    }
+
+    public void setIncluye(List<String> incluye) {
+        this.incluye = incluye;
     }
 }
