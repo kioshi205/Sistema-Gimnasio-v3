@@ -18,6 +18,15 @@
     </div>
 </c:if>
 
+<c:if test="${not empty planesBloqueados}">
+    <div class="error">
+        <p><strong>RN02:</strong> Los planes que incluyen sus subproductos no se pueden vender mientras la categoría esté inactiva:</p>
+        <c:forEach var="plan" items="${planesBloqueados}">
+            <p>${plan}</p>
+        </c:forEach>
+    </div>
+</c:if>
+
 <form class="panel formulario" method="post" action="${pageContext.request.contextPath}/categorias/editar">
     <input type="hidden" name="idCategoria" value="${categoria.idCategoria}">
 
@@ -35,12 +44,31 @@
         <option value="INACTIVO" <c:if test="${categoria.estado == 'INACTIVO'}">selected</c:if>>INACTIVO</option>
     </select>
 
-    <small>Si la categoría pasa a INACTIVO, sus subproductos dejarán de mostrarse como disponibles en el diseñador de planes personalizados.</small>
+    <small>El cambio de estado es lógico (no se elimina el registro). Al desactivar, sus subproductos dejan de estar disponibles y los planes que los incluyen dejan de venderse (RN02).</small>
 
     <div class="acciones">
         <a class="btn sec" href="${pageContext.request.contextPath}/categorias">Cancelar</a>
         <button class="btn" type="submit">Guardar cambios</button>
     </div>
 </form>
+
+<c:choose>
+    <c:when test="${categoria.estado == 'ACTIVO'}">
+        <form method="post" action="${pageContext.request.contextPath}/categorias/desactivar">
+            <input type="hidden" name="idCategoria" value="${categoria.idCategoria}">
+            <div class="acciones">
+                <button class="btn sec" type="submit">Desactivar categoría</button>
+            </div>
+        </form>
+    </c:when>
+    <c:otherwise>
+        <form method="post" action="${pageContext.request.contextPath}/categorias/activar">
+            <input type="hidden" name="idCategoria" value="${categoria.idCategoria}">
+            <div class="acciones">
+                <button class="btn sec" type="submit">Activar categoría</button>
+            </div>
+        </form>
+    </c:otherwise>
+</c:choose>
 
 <jsp:include page="/WEB-INF/views/fragmentsJB/footerJB.jsp"/>

@@ -57,6 +57,7 @@ public class CategoriaControllerLV {
             return "redirect:/categorias";
         }
         model.addAttribute("categoria", categoria);
+        model.addAttribute("planesBloqueados", servicio.listarPlanesBloqueados(id));
         return "CategoriasLV/editarCategoriaLV";
     }
 
@@ -76,8 +77,23 @@ public class CategoriaControllerLV {
         if (!errores.isEmpty()) {
             model.addAttribute("errores", errores);
             model.addAttribute("categoria", categoria);
+            if (idCategoria != null) {
+                model.addAttribute("planesBloqueados", servicio.listarPlanesBloqueados(idCategoria));
+            }
             return "CategoriasLV/editarCategoriaLV";
         }
         return "redirect:/categorias";
+    }
+
+    @PostMapping("/desactivar")
+    public String desactivar(@RequestParam int idCategoria) {
+        servicio.desactivar(idCategoria);
+        return "redirect:/categorias/editar?id=" + idCategoria;
+    }
+
+    @PostMapping("/activar")
+    public String activar(@RequestParam int idCategoria) {
+        servicio.activar(idCategoria);
+        return "redirect:/categorias/editar?id=" + idCategoria;
     }
 }

@@ -62,4 +62,14 @@ public class SubproductoRepositoryLV {
                 subproducto.getPrecioIndividual(), subproducto.getEstado(),
                 subproducto.getIdSubproducto());
     }
+
+    public List<Integer> listarIdsPlanesPorSubproducto(int idSubproducto) {
+        String sql = "SELECT DISTINCT ps.id_plan FROM PLAN_SUBPRODUCTO ps " +
+                "WHERE ps.id_subproducto = ?";
+        return jdbc.queryForList(sql, Integer.class, idSubproducto);
+    }
+
+    public String buscarNombrePlan(int idPlan) {
+        return jdbc.queryForObject("SELECT nombre_plan FROM PLAN WHERE id_plan = ?", String.class, idPlan);
+    }
 }

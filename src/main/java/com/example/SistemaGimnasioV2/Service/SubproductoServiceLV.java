@@ -15,10 +15,13 @@ public class SubproductoServiceLV {
 
     private final SubproductoRepositoryLV repo;
     private final CategoriaRepositoryLV categoriaRepo;
+    private final SuscripcionServiceJB suscripcionService;
 
-    public SubproductoServiceLV(SubproductoRepositoryLV repo, CategoriaRepositoryLV categoriaRepo) {
+    public SubproductoServiceLV(SubproductoRepositoryLV repo, CategoriaRepositoryLV categoriaRepo,
+                                SuscripcionServiceJB suscripcionService) {
         this.repo = repo;
         this.categoriaRepo = categoriaRepo;
+        this.suscripcionService = suscripcionService;
     }
 
     public List<SubproductoLV> listarSubproductos(Integer idCategoria) {
@@ -38,6 +41,35 @@ public class SubproductoServiceLV {
 
     public SubproductoLV buscarSubproducto(int idSubproducto) {
         return repo.buscarPorId(idSubproducto);
+    }
+
+    // RN02: baja lógica, nunca se elimina el subproducto
+    public void desactivar(int idSubproducto) {
+        cambiarEstado(idSubproducto, "INACTIVO");
+    }
+
+    public void activar(int idSubproducto) {
+        cambiarEstado(idSubproducto, "ACTIVO");
+    }
+
+    private void cambiarEstado(int idSubproducto, String estado) {
+        SubproductoLV subproducto = repo.buscarPorId(idSubproducto);
+        if (subproducto != null) {
+            subproducto.setEstado(estado);
+            repo.actualizar(subproducto);
+        }
+    }
+
+    // RN02: usa el método de main para saber qué planes quedan bloqueados
+    public List<String> listarPlanesBloqueados(int idSubproducto) {
+        List<Integer> idsPlanes = repo.listarIdsPlanesPorSubproducto(idSubproducto);
+        List<String> nombres = new ArrayList<>();
+        for (Integer idPlan : idsPlanes) {
+            if (!suscripcionService.planDisponible(idPlan)) {
+                nombres.add(repo.buscarNombrePlan(idPlan));
+            }
+        }
+        return nombres;
     }
 
     public List<String> registrar(SubproductoLV subproducto, String precioTexto) {

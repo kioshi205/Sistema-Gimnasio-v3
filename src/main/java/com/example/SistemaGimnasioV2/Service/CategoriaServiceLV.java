@@ -11,9 +11,11 @@ import java.util.List;
 public class CategoriaServiceLV {
 
     private final CategoriaRepositoryLV repo;
+    private final SuscripcionServiceJB suscripcionService;
 
-    public CategoriaServiceLV(CategoriaRepositoryLV repo) {
+    public CategoriaServiceLV(CategoriaRepositoryLV repo, SuscripcionServiceJB suscripcionService) {
         this.repo = repo;
+        this.suscripcionService = suscripcionService;
     }
 
     public List<CategoriaLV> listarCategorias() {
@@ -26,6 +28,35 @@ public class CategoriaServiceLV {
 
     public CategoriaLV buscarCategoria(int idCategoria) {
         return repo.buscarPorId(idCategoria);
+    }
+
+    // RN02: baja lógica, nunca se elimina la categoría
+    public void desactivar(int idCategoria) {
+        cambiarEstado(idCategoria, "INACTIVO");
+    }
+
+    public void activar(int idCategoria) {
+        cambiarEstado(idCategoria, "ACTIVO");
+    }
+
+    private void cambiarEstado(int idCategoria, String estado) {
+        CategoriaLV categoria = repo.buscarPorId(idCategoria);
+        if (categoria != null) {
+            categoria.setEstado(estado);
+            repo.actualizar(categoria);
+        }
+    }
+
+    // RN02: usa el método de main para saber qué planes quedan bloqueados
+    public List<String> listarPlanesBloqueados(int idCategoria) {
+        List<Integer> idsPlanes = repo.listarIdsPlanesPorCategoria(idCategoria);
+        List<String> nombres = new ArrayList<>();
+        for (Integer idPlan : idsPlanes) {
+            if (!suscripcionService.planDisponible(idPlan)) {
+                nombres.add(repo.buscarNombrePlan(idPlan));
+            }
+        }
+        return nombres;
     }
 
     public List<String> registrar(CategoriaLV categoria) {

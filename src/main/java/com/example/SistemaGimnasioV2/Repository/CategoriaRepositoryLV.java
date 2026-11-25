@@ -55,4 +55,15 @@ public class CategoriaRepositoryLV {
         jdbc.update(sql, categoria.getNombreCategoria(), categoria.getDescripcion(),
                 categoria.getEstado(), categoria.getIdCategoria());
     }
+
+    public List<Integer> listarIdsPlanesPorCategoria(int idCategoria) {
+        String sql = "SELECT DISTINCT ps.id_plan FROM PLAN_SUBPRODUCTO ps " +
+                "JOIN SUBPRODUCTO s ON s.id_subproducto = ps.id_subproducto " +
+                "WHERE s.id_categoria = ?";
+        return jdbc.queryForList(sql, Integer.class, idCategoria);
+    }
+
+    public String buscarNombrePlan(int idPlan) {
+        return jdbc.queryForObject("SELECT nombre_plan FROM PLAN WHERE id_plan = ?", String.class, idPlan);
+    }
 }

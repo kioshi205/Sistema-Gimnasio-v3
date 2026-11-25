@@ -65,6 +65,7 @@ public class SubproductoControllerLV {
         model.addAttribute("subproducto", subproducto);
         model.addAttribute("precioTexto", subproducto.getPrecioIndividual().toPlainString());
         model.addAttribute("categorias", servicio.listarCategorias());
+        model.addAttribute("planesBloqueados", servicio.listarPlanesBloqueados(id));
         return "SubproductosLV/editarSubproductoLV";
     }
 
@@ -87,8 +88,23 @@ public class SubproductoControllerLV {
             model.addAttribute("subproducto", subproducto);
             model.addAttribute("precioTexto", precioIndividual);
             model.addAttribute("categorias", servicio.listarCategorias());
+            if (idSubproducto != null) {
+                model.addAttribute("planesBloqueados", servicio.listarPlanesBloqueados(idSubproducto));
+            }
             return "SubproductosLV/editarSubproductoLV";
         }
         return "redirect:/subproductos";
+    }
+
+    @PostMapping("/desactivar")
+    public String desactivar(@RequestParam int idSubproducto) {
+        servicio.desactivar(idSubproducto);
+        return "redirect:/subproductos/editar?id=" + idSubproducto;
+    }
+
+    @PostMapping("/activar")
+    public String activar(@RequestParam int idSubproducto) {
+        servicio.activar(idSubproducto);
+        return "redirect:/subproductos/editar?id=" + idSubproducto;
     }
 }
