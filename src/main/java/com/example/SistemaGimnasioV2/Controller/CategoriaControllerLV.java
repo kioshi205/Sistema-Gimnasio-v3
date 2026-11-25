@@ -6,11 +6,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/categorias")
 public class CategoriaControllerLV {
 
     private final CategoriaServiceLV servicio;
@@ -19,19 +21,19 @@ public class CategoriaControllerLV {
         this.servicio = servicio;
     }
 
-    @GetMapping("/categorias")
+    @GetMapping
     public String listar(Model model) {
         model.addAttribute("categorias", servicio.listarCategorias());
         return "CategoriasLV/listarCategoriasLV";
     }
 
-    @GetMapping("/categorias/registrar")
+    @GetMapping("/registrar")
     public String formularioRegistrar(Model model) {
         model.addAttribute("categoria", new CategoriaLV());
         return "CategoriasLV/registrarCategoriaLV";
     }
 
-    @PostMapping("/categorias/registrar")
+    @PostMapping("/registrar")
     public String registrar(@RequestParam(required = false) String nombreCategoria,
                             @RequestParam(required = false) String descripcion,
                             Model model) {
@@ -48,7 +50,7 @@ public class CategoriaControllerLV {
         return "redirect:/categorias";
     }
 
-    @GetMapping("/categorias/editar")
+    @GetMapping("/editar")
     public String formularioEditar(@RequestParam int id, Model model) {
         CategoriaLV categoria = servicio.buscarCategoria(id);
         if (categoria == null) {
@@ -58,7 +60,7 @@ public class CategoriaControllerLV {
         return "CategoriasLV/editarCategoriaLV";
     }
 
-    @PostMapping("/categorias/editar")
+    @PostMapping("/editar")
     public String editar(@RequestParam(required = false) Integer idCategoria,
                          @RequestParam(required = false) String nombreCategoria,
                          @RequestParam(required = false) String descripcion,

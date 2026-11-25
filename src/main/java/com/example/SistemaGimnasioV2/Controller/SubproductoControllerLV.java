@@ -6,11 +6,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/subproductos")
 public class SubproductoControllerLV {
 
     private final SubproductoServiceLV servicio;
@@ -19,7 +21,7 @@ public class SubproductoControllerLV {
         this.servicio = servicio;
     }
 
-    @GetMapping("/subproductos")
+    @GetMapping
     public String listar(@RequestParam(required = false) Integer idCategoria, Model model) {
         model.addAttribute("subproductos", servicio.listarSubproductos(idCategoria));
         model.addAttribute("categorias", servicio.listarCategorias());
@@ -27,14 +29,14 @@ public class SubproductoControllerLV {
         return "SubproductosLV/listarSubproductosLV";
     }
 
-    @GetMapping("/subproductos/registrar")
+    @GetMapping("/registrar")
     public String formularioRegistrar(Model model) {
         model.addAttribute("subproducto", new SubproductoLV());
         model.addAttribute("categorias", servicio.listarCategoriasActivas());
         return "SubproductosLV/registrarSubproductoLV";
     }
 
-    @PostMapping("/subproductos/registrar")
+    @PostMapping("/registrar")
     public String registrar(@RequestParam(required = false) Integer idCategoria,
                             @RequestParam(required = false) String nombreSubproducto,
                             @RequestParam(required = false) String precioIndividual,
@@ -54,7 +56,7 @@ public class SubproductoControllerLV {
         return "redirect:/subproductos";
     }
 
-    @GetMapping("/subproductos/editar")
+    @GetMapping("/editar")
     public String formularioEditar(@RequestParam int id, Model model) {
         SubproductoLV subproducto = servicio.buscarSubproducto(id);
         if (subproducto == null) {
@@ -66,7 +68,7 @@ public class SubproductoControllerLV {
         return "SubproductosLV/editarSubproductoLV";
     }
 
-    @PostMapping("/subproductos/editar")
+    @PostMapping("/editar")
     public String editar(@RequestParam(required = false) Integer idSubproducto,
                          @RequestParam(required = false) Integer idCategoria,
                          @RequestParam(required = false) String nombreSubproducto,

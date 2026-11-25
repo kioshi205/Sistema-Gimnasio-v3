@@ -15,7 +15,7 @@ INSERT INTO SUBPRODUCTO (id_subproducto, id_categoria, nombre_subproducto, preci
                                                                                                   (1, 1, 'Sala de máquinas y pesas', 50),
                                                                                                   (2, 1, 'Zona de cardio', 35),
                                                                                                   (3, 1, 'Zona funcional', 30),
-                                                                                                  (4, 2, 'Wifi gratis', 10),
+                                                                                                  (4, 2, 'WIFI', 10),
                                                                                                   (5, 2, 'Acceso al dispensador de agua purificada', 10),
                                                                                                   (6, 2, 'Zona de descanso y lounge', 15),
                                                                                                   (7, 2, 'Estación de carga de celulares', 10),
