@@ -2,12 +2,14 @@ package com.example.SistemaGimnasioV2.Service;
 
 import com.example.SistemaGimnasioV2.Repository.GimnasioRepositoryJB;
 import com.example.SistemaGimnasioV2.modelJB.ClienteJB;
+import com.example.SistemaGimnasioV2.modelJB.CuponJB;
 import com.example.SistemaGimnasioV2.modelJB.PlanJB;
 import com.example.SistemaGimnasioV2.modelJB.ResumenSuscripcionJB;
 import com.example.SistemaGimnasioV2.modelJB.SubproductoJB;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,10 @@ import java.util.List;
 public class SuscripcionServiceJB {
 
     private static final int DIAS_PERSONALIZADO = 30;
+    private static final int ID_CATEGORIA_ENTRENAMIENTO = 1;
+    private static final int MINIMO_SUBPRODUCTOS_DESCUENTO = 5;
+    private static final BigDecimal PORCENTAJE_PERSONALIZADO = new BigDecimal("0.15");
+    private static final BigDecimal PORCENTAJE_REFERIDO = new BigDecimal("0.50");
 
     private final GimnasioRepositoryJB repo;
 
@@ -34,17 +40,52 @@ public class SuscripcionServiceJB {
     public List<SubproductoJB> buscarSubproductos(List<Integer> ids) {
         return repo.buscarSubproductos(ids);
     }
-
-    public boolean seleccionValida(Integer idPlan, List<Integer> ids) {
-        return idPlan != null || (ids != null && !ids.isEmpty());
+    // RN02: Un plan predeterminado solo se puede vender si todos sus servicios y categorías están activos
+    public boolean planDisponible(int idPlan) {
+        List<String> inactivos = repo.listarServiciosInactivosPorPlan(idPlan);
+        return inactivos.isEmpty();
     }
 
-    public BigDecimal total(List<SubproductoJB> subproductos) {
+    public boolean seleccionValida(Integer idPlan, List<Integer> ids) {
+        if (idPlan != null) {
+            return planDisponible(idPlan);
+        }
+        return ids != null && !ids.isEmpty();
+    }
+
+    
+    public boolean tieneZonaEntrenamiento(List<SubproductoJB> subproductos) {
+        for (SubproductoJB s : subproductos) {
+            if (s.getIdCategoria() != null && s.getIdCategoria() == ID_CATEGORIA_ENTRENAMIENTO) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Suma directa de precios individuales sin descuento
+    public BigDecimal subtotal(List<SubproductoJB> subproductos) {
         BigDecimal suma = BigDecimal.ZERO;
         for (SubproductoJB s : subproductos) {
             suma = suma.add(s.getPrecioIndividual());
         }
         return suma;
+    }
+
+    // RN03: 15% de descuento si el plan personalizado tiene 5 o más subproductos
+    public BigDecimal descuentoPersonalizado(List<SubproductoJB> subproductos) {
+        if (subproductos.size() >= MINIMO_SUBPRODUCTOS_DESCUENTO) {
+            BigDecimal suma = subtotal(subproductos);
+            return suma.multiply(PORCENTAJE_PERSONALIZADO).setScale(2, RoundingMode.HALF_UP);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    // Total final del plan personalizado (subtotal - descuento RN03)
+    public BigDecimal total(List<SubproductoJB> subproductos) {
+        BigDecimal suma = subtotal(subproductos);
+        BigDecimal descuento = descuentoPersonalizado(subproductos);
+        return suma.subtract(descuento);
     }
 
     public List<String> validarCliente(ClienteJB c) {
@@ -88,15 +129,18 @@ public class SuscripcionServiceJB {
         return repo.insertarCliente(c);
     }
 
-    public ResumenSuscripcionJB armarResumen(Integer idPlan, List<Integer> ids, int idCliente) {
+    public ResumenSuscripcionJB armarResumen(Integer idPlan, List<Integer> ids, int idCliente,
+                                             String codigoCupon, String dniReferente) {
         ResumenSuscripcionJB resumen = new ResumenSuscripcionJB();
         int dias;
+        BigDecimal subtotalPlan;
+        BigDecimal descuentoPers = BigDecimal.ZERO;
 
         if (idPlan != null) {
             PlanJB plan = repo.buscarPlan(idPlan);
             resumen.setNombrePlan(plan.getNombrePlan());
             resumen.setDetalle(String.join(";", plan.getIncluye()));
-            resumen.setMontoTotal(plan.getPrecioBase());
+            subtotalPlan = plan.getPrecioBase();
             dias = plan.getDuracionDias();
         } else {
             List<SubproductoJB> subproductos = repo.buscarSubproductos(ids);
@@ -106,7 +150,8 @@ public class SuscripcionServiceJB {
             }
             resumen.setNombrePlan("Personalizado");
             resumen.setDetalle(String.join(";", nombres));
-            resumen.setMontoTotal(total(subproductos));
+            subtotalPlan = subtotal(subproductos);
+            descuentoPers = descuentoPersonalizado(subproductos);
             dias = DIAS_PERSONALIZADO;
         }
 
@@ -115,13 +160,120 @@ public class SuscripcionServiceJB {
         resumen.setFechaInicio(hoy);
         resumen.setFechaFin(hoy.plusDays(dias));
         resumen.setFechaFinVigente(repo.fechaFinVigente(idCliente, hoy));
+        resumen.setSubtotal(subtotalPlan);
+        resumen.setDescuentoPersonalizado(descuentoPers);
+        resumen.setDescuentoPromocion(BigDecimal.ZERO);
+
+        BigDecimal montoBase = subtotalPlan.subtract(descuentoPers);
+
+        // Evaluar promociones excluyentes: RN01 (Cupón) o RN05 (Referido)
+        aplicarPromocion(resumen, idCliente, montoBase, hoy, codigoCupon, dniReferente);
+
         return resumen;
     }
 
-    public int confirmar(Integer idPlan, List<Integer> ids, int idCliente) {
-        ResumenSuscripcionJB resumen = armarResumen(idPlan, ids, idCliente);
-        return repo.insertarSuscripcion(idCliente, idPlan, resumen.getDetalle(),
-                resumen.getFechaInicio(), resumen.getFechaFin(), resumen.getMontoTotal());
+    private void aplicarPromocion(ResumenSuscripcionJB resumen, int idCliente, BigDecimal montoBase,
+                                  LocalDate hoy, String codigoCupon, String dniReferente) {
+        String cuponLimpio = texto(codigoCupon);
+        String dniRefLimpio = texto(dniReferente);
+
+        // Regla de exclusividad: no se pueden usar cupón y referido juntos
+        if (!cuponLimpio.isEmpty() && !dniRefLimpio.isEmpty()) {
+            resumen.setMensajePromocion("No se puede combinar un cupón promocional con el descuento por referido. Ingresa solo uno.");
+            resumen.setMontoTotal(montoBase);
+            return;
+        }
+
+        // RN01: Descuento del 25% por cupón promocional vigente y sin uso previo
+        if (!cuponLimpio.isEmpty()) {
+            CuponJB cupon = repo.buscarCuponPorCodigo(cuponLimpio);
+
+            if (cupon == null) {
+                resumen.setMensajePromocion("El cupón ingresado no existe. Se mantiene el precio normal.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+            if (!"ACTIVO".equals(cupon.getEstado())) {
+                resumen.setMensajePromocion("El cupón se encuentra inactivo. Se mantiene el precio normal.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+            if (hoy.isBefore(cupon.getFechaInicio()) || hoy.isAfter(cupon.getFechaFin())) {
+                resumen.setMensajePromocion("El cupón está vencido o fuera de vigencia. Se mantiene el precio normal.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+            if (repo.cuponYaFueUsado(cupon.getIdCupon())) {
+                resumen.setMensajePromocion("Ese cupón ya fue utilizado en otra suscripción. Se mantiene el precio normal.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+
+            BigDecimal porcentaje = new BigDecimal(cupon.getPorcentajeDescuento())
+                    .divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP);
+            BigDecimal descuento = montoBase.multiply(porcentaje).setScale(2, RoundingMode.HALF_UP);
+
+            resumen.setIdCuponAplicado(cupon.getIdCupon());
+            resumen.setDescuentoPromocion(descuento);
+            resumen.setNombrePromocion("Cupón " + cupon.getCodigo() + " (" + cupon.getPorcentajeDescuento() + "%)");
+            resumen.setMontoTotal(montoBase.subtract(descuento));
+            return;
+        }
+
+        // RN05: Descuento del 50% para nuevo cliente referido por socio vigente
+        if (!dniRefLimpio.isEmpty()) {
+            if (repo.contarSuscripcionesCliente(idCliente) > 0) {
+                resumen.setMensajePromocion("El descuento por referido aplica solo para clientes nuevos sin suscripciones previas.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+            if (!dniRefLimpio.matches("\\d{8}")) {
+                resumen.setMensajePromocion("El DNI del socio referente debe tener 8 dígitos.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+
+            ClienteJB referente = repo.buscarClientePorDni(dniRefLimpio);
+            if (referente == null) {
+                resumen.setMensajePromocion("El DNI del socio referente no está registrado.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+            if (referente.getIdCliente().equals(idCliente)) {
+                resumen.setMensajePromocion("Un cliente no puede referirse a sí mismo.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+            if (repo.fechaFinVigente(referente.getIdCliente(), hoy) == null) {
+                resumen.setMensajePromocion("El socio referente no cuenta con una suscripción vigente.");
+                resumen.setMontoTotal(montoBase);
+                return;
+            }
+
+            BigDecimal descuento = montoBase.multiply(PORCENTAJE_REFERIDO).setScale(2, RoundingMode.HALF_UP);
+
+            resumen.setDescuentoPromocion(descuento);
+            resumen.setNombrePromocion("Referido por " + referente.getNombre() + " " + referente.getApellido() + " (50%)");
+            resumen.setMontoTotal(montoBase.subtract(descuento));
+            return;
+        }
+
+        // Sin cupón ni referido: se cobra el monto base
+        resumen.setMontoTotal(montoBase);
+    }
+
+    public int confirmar(Integer idPlan, List<Integer> ids, int idCliente,
+                         String codigoCupon, String dniReferente) {
+        ResumenSuscripcionJB resumen = armarResumen(idPlan, ids, idCliente, codigoCupon, dniReferente);
+        return repo.insertarSuscripcion(
+                idCliente,
+                idPlan,
+                resumen.getIdCuponAplicado(),
+                resumen.getDetalle(),
+                resumen.getFechaInicio(),
+                resumen.getFechaFin(),
+                resumen.getMontoTotal()
+        );
     }
 
     public boolean tieneSuscripcionVigente(int idCliente) {
@@ -129,6 +281,9 @@ public class SuscripcionServiceJB {
     }
 
     private String texto(String valor) {
-        return valor == null ? "" : valor.trim();
+        if (valor == null) {
+            return "";
+        }
+        return valor.trim();
     }
 }

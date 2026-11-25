@@ -511,4 +511,8 @@ h1 {
     .portada h1 {
         font-size: 2rem;
     }
+    .card.bloqueada {
+        opacity: 0.78;
+        border-top-color: #e5484d;
+    }
 }
