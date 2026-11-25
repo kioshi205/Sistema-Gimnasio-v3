@@ -13,6 +13,8 @@
         <div class="marca">GIMNASIO</div>
         <nav class="lateral-menu">
             <a class="activo" href="${pageContext.request.contextPath}/planes">SUSCRIPCION</a>
+            <a href="${pageContext.request.contextPath}/categorias">CATEGORÍAS</a>
+            <a href="${pageContext.request.contextPath}/subproductos">SUBPRODUCTOS</a>
             <%-- Enlaces para que el equipo descomente cuando termine su módulo:
             <a href="${pageContext.request.contextPath}/suscripciones">Suscripciones</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
