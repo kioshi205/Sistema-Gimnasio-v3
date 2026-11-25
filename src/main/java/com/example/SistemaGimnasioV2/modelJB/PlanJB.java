@@ -9,6 +9,8 @@ public class PlanJB {
     private BigDecimal precioBase;
     private Integer duracionDias;
     private List<String> incluye;
+    private boolean disponible;
+    private List<String> serviciosInactivos;
 
     public Integer getIdPlan() {
         return idPlan;
@@ -48,5 +50,20 @@ public class PlanJB {
 
     public void setIncluye(List<String> incluye) {
         this.incluye = incluye;
+    }
+    public boolean isDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(boolean disponible) {
+        this.disponible = disponible;
+    }
+
+    public List<String> getServiciosInactivos() {
+        return serviciosInactivos;
+    }
+
+    public void setServiciosInactivos(List<String> serviciosInactivos) {
+        this.serviciosInactivos = serviciosInactivos;
     }
 }

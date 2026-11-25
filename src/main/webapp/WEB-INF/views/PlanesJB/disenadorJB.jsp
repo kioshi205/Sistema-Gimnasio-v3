@@ -9,7 +9,7 @@
     <h1>Diseñador de Plan Personalizado</h1>
     <span class="codigo">F04</span>
 </div>
-<p class="sub">Marca los subproductos que quieres incluir.</p>
+<p class="sub">Marca los subproductos que quieres incluir (obligatorio al menos una Zona de Entrenamiento; 15% de descuento desde 5 subproductos).</p>
 
 <c:if test="${not empty error}">
     <div class="error">${error}</div>
@@ -30,9 +30,21 @@
     </div>
 
     <div class="panel">
+        <div class="fila">
+            <span>Seleccionados</span>
+            <span id="cantidad">0</span>
+        </div>
+        <div class="fila">
+            <span>Subtotal</span>
+            <span>S/ <span id="subtotal">0.00</span></span>
+        </div>
+        <div class="fila">
+            <span>Descuento 15% (5 o más subproductos)</span>
+            <span>- S/ <span id="descuento">0.00</span></span>
+        </div>
         <div class="total">
-            <span>Seleccionados: <span id="cantidad">0</span></span>
-            <span>Total: S/ <span id="total">0.00</span></span>
+            <span>Total a pagar</span>
+            <span>S/ <span id="total">0.00</span></span>
         </div>
     </div>
 
@@ -46,16 +58,26 @@
     const casillas = document.querySelectorAll('input[name=ids]');
 
     function calcular() {
-        let total = 0;
+        let subtotal = 0;
         let cantidad = 0;
+
         casillas.forEach(function (casilla) {
             if (casilla.checked) {
-                total += parseFloat(casilla.dataset.precio);
+                subtotal += parseFloat(casilla.dataset.precio);
                 cantidad++;
             }
         });
-        document.getElementById('total').textContent = total.toFixed(2);
+
+        let descuento = 0;
+        if (cantidad >= 5) {
+            descuento = subtotal * 0.15;
+        }
+        let total = subtotal - descuento;
+
         document.getElementById('cantidad').textContent = cantidad;
+        document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+        document.getElementById('descuento').textContent = descuento.toFixed(2);
+        document.getElementById('total').textContent = total.toFixed(2);
     }
 
     casillas.forEach(function (casilla) {
