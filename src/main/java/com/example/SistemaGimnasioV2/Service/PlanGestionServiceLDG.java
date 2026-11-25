@@ -91,6 +91,18 @@ public class PlanGestionServiceLDG {
             seleccionados.add(subproducto);
         }
 
+        boolean tieneZonaEntrenamiento = false;
+
+        for (SubproductoJB subproducto : seleccionados) {
+            if ("Zonas de Entrenamiento".equals(subproducto.getNombreCategoria())) {
+                tieneZonaEntrenamiento = true;
+            }
+        }
+
+        if (!tieneZonaEntrenamiento) {
+            return "Debes seleccionar al menos un subproducto de la categoría Zonas de Entrenamiento.";
+        }
+
         BigDecimal precioBase = calcularPrecio(seleccionados);
 
         repo.actualizarPrecioPlan(idPlan, precioBase);

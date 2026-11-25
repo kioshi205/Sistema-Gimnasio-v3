@@ -15,15 +15,18 @@
     <div class="error"><c:out value="${error}"/></div>
 </c:if>
 
-<form method="post" action="${pageContext.request.contextPath}/gestion-planes/actualizar/${plan.idPlan}">
+<form method="post" action="${pageContext.request.contextPath}/gestion-planes/actualizar/${plan.idPlan}"
+      onsubmit="return validarZonaEntrenamiento()">
     <div class="panel">
         <h3>Subproductos disponibles</h3>
+        <p class="descripcion">Debes seleccionar al menos un subproducto de la categoría Zonas de Entrenamiento.</p>
 
         <c:forEach var="subproducto" items="${subproductos}">
             <label class="item">
                 <span>
                     <input type="checkbox" name="ids" value="${subproducto.idSubproducto}"
                            data-precio="${subproducto.precioIndividual}"
+                           data-categoria="${subproducto.nombreCategoria}"
                            onchange="calcularPrecio()"
                            ${idsSeleccionados.contains(subproducto.idSubproducto) ? 'checked' : ''}>
                     <c:out value="${subproducto.nombreSubproducto}"/>
@@ -64,6 +67,24 @@
         }
 
         document.getElementById("precioBase").innerHTML = total.toFixed(2);
+    }
+
+    function validarZonaEntrenamiento() {
+        var casillas = document.getElementsByName("ids");
+        var hayZona = false;
+
+        for (var i = 0; i < casillas.length; i++) {
+            if (casillas[i].checked && casillas[i].getAttribute("data-categoria") === "Zonas de Entrenamiento") {
+                hayZona = true;
+            }
+        }
+
+        if (!hayZona) {
+            alert("Debes seleccionar al menos un subproducto de la categoría Zonas de Entrenamiento.");
+            return false;
+        }
+
+        return true;
     }
 
     window.onload = function () {
