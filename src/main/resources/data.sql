@@ -53,8 +53,10 @@ INSERT INTO CLIENTE (id_cliente, dni, nombre, apellido, telefono, email) VALUES
                                                                              (4, '71001122', 'Andrés', 'Tovar Gómez', '912345010', 'andres.tovar@correo.pe');
 
 INSERT INTO CUPON (id_cupon, codigo, descripcion, porcentaje_descuento, fecha_inicio, fecha_fin, estado) VALUES
-                                                                                                             (1, 'BIENVENIDA10', 'Descuento de bienvenida para nuevos socios', 10, '2026-11-01', '2026-12-31', 'ACTIVO'),
-                                                                                                             (2, 'VERANO15', 'Promoción campaña de verano', 15, '2027-01-01', '2027-02-28', 'ACTIVO');
+(1, 'BIENVENIDA10', 'Descuento de bienvenida para nuevos socios', 10, '2026-11-01', '2026-12-31', 'ACTIVO'),
+(2, 'VERANO15', 'Promoción campaña de verano', 15, '2027-01-01', '2027-02-28', 'ACTIVO'),
+(3, 'CAMPAÑA25', 'Descuento promocional de campaña 25%', 25, '2026-11-01', '2027-12-31', 'ACTIVO'),
+(4, 'VENCIDO25', 'Cupón de prueba vencido', 25, '2026-01-01', '2026-01-31', 'ACTIVO');
 
 INSERT INTO SUSCRIPCION (id_suscripcion, id_cliente, id_plan, id_cupon, detalle, fecha_inicio, fecha_fin, monto_total) VALUES
                                                                                                                            (1, 1, 2, NULL, 'Sala de máquinas y pesas; Zona de cardio; Wifi gratis; Acceso al dispensador de agua purificada; Zona de descanso y lounge; Ingreso a las duchas; Uso de casilleros; Equipo de entrenamiento y lavado', '2026-09-01', '2026-10-01', 195),

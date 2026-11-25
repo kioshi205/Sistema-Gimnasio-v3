@@ -12,6 +12,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import com.example.SistemaGimnasioV2.modelJB.CuponJB;
 
 @Repository
 public class GimnasioRepositoryJB {
@@ -61,7 +62,10 @@ public class GimnasioRepositoryJB {
 
         for (PlanJB plan : planes) {
             List<String> servicios = listarServiciosPorPlan(plan.getIdPlan());
+            List<String> inactivos = listarServiciosInactivosPorPlan(plan.getIdPlan());
             plan.setIncluye(servicios);
+            plan.setServiciosInactivos(inactivos);
+            plan.setDisponible(inactivos.isEmpty());
         }
         return planes;
     }
@@ -72,7 +76,10 @@ public class GimnasioRepositoryJB {
                 new BeanPropertyRowMapper<>(PlanJB.class), idPlan);
 
         List<String> servicios = listarServiciosPorPlan(idPlan);
+        List<String> inactivos = listarServiciosInactivosPorPlan(idPlan);
         plan.setIncluye(servicios);
+        plan.setServiciosInactivos(inactivos);
+        plan.setDisponible(inactivos.isEmpty());
         return plan;
     }
 
@@ -130,12 +137,49 @@ public class GimnasioRepositoryJB {
                 Date.class, idCliente, Date.valueOf(hoy));
         return fin == null ? null : fin.toLocalDate();
     }
+    public CuponJB buscarCuponPorCodigo(String codigo) {
+        List<CuponJB> lista = jdbc.query(
+                "SELECT id_cupon, codigo, descripcion, porcentaje_descuento, fecha_inicio, fecha_fin, estado " +
+                        "FROM CUPON WHERE UPPER(codigo) = UPPER(?)",
+                new BeanPropertyRowMapper<>(CuponJB.class), codigo);
+        if (lista.isEmpty()) {
+            return null;
+        }
+        return lista.get(0);
+    }
 
-    public int insertarSuscripcion(int idCliente, Integer idPlan, String detalle,
+    public boolean cuponYaFueUsado(int idCupon) {
+        Integer cantidad = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM SUSCRIPCION WHERE id_cupon = ?",
+                Integer.class, idCupon);
+        return cantidad != null && cantidad > 0;
+    }
+
+    public int contarSuscripcionesCliente(int idCliente) {
+        Integer cantidad = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM SUSCRIPCION WHERE id_cliente = ?",
+                Integer.class, idCliente);
+        if (cantidad == null) {
+            return 0;
+        }
+        return cantidad;
+    }
+
+    public int insertarSuscripcion(int idCliente, Integer idPlan, Integer idCupon, String detalle,
                                    LocalDate inicio, LocalDate fin, BigDecimal monto) {
-        jdbc.update("INSERT INTO SUSCRIPCION (id_cliente, id_plan, detalle, fecha_inicio, fecha_fin, monto_total) " +
-                        "VALUES (?, ?, ?, ?, ?, ?)",
-                idCliente, idPlan, detalle, Date.valueOf(inicio), Date.valueOf(fin), monto);
+        jdbc.update("INSERT INTO SUSCRIPCION (id_cliente, id_plan, id_cupon, detalle, fecha_inicio, fecha_fin, monto_total) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                idCliente, idPlan, idCupon, detalle, Date.valueOf(inicio), Date.valueOf(fin), monto);
         return jdbc.queryForObject("SELECT MAX(id_suscripcion) FROM SUSCRIPCION", Integer.class);
+    }
+    public List<String> listarServiciosInactivosPorPlan(int idPlan) {
+        String sql = "SELECT s.nombre_subproducto " +
+                "FROM PLAN_SUBPRODUCTO ps " +
+                "JOIN SUBPRODUCTO s ON s.id_subproducto = ps.id_subproducto " +
+                "JOIN CATEGORIA c ON c.id_categoria = s.id_categoria " +
+                "WHERE ps.id_plan = ? " +
+                "AND (s.estado = 'INACTIVO' OR c.estado = 'INACTIVO') " +
+                "ORDER BY s.id_subproducto";
+        return jdbc.queryForList(sql, String.class, idPlan);
     }
 }

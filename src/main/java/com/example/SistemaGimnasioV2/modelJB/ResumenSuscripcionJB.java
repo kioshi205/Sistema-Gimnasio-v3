@@ -6,10 +6,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ResumenSuscripcionJB {
-
     private ClienteJB cliente;
     private String nombrePlan;
     private String detalle;
+    private BigDecimal subtotal;
+    private BigDecimal descuentoPersonalizado;
+    private BigDecimal descuentoPromocion;
+    private String nombrePromocion;
+    private Integer idCuponAplicado;
+    private String mensajePromocion;
     private BigDecimal montoTotal;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
@@ -37,6 +42,54 @@ public class ResumenSuscripcionJB {
 
     public void setDetalle(String detalle) {
         this.detalle = detalle;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public BigDecimal getDescuentoPersonalizado() {
+        return descuentoPersonalizado;
+    }
+
+    public void setDescuentoPersonalizado(BigDecimal descuentoPersonalizado) {
+        this.descuentoPersonalizado = descuentoPersonalizado;
+    }
+
+    public BigDecimal getDescuentoPromocion() {
+        return descuentoPromocion;
+    }
+
+    public void setDescuentoPromocion(BigDecimal descuentoPromocion) {
+        this.descuentoPromocion = descuentoPromocion;
+    }
+
+    public String getNombrePromocion() {
+        return nombrePromocion;
+    }
+
+    public void setNombrePromocion(String nombrePromocion) {
+        this.nombrePromocion = nombrePromocion;
+    }
+
+    public Integer getIdCuponAplicado() {
+        return idCuponAplicado;
+    }
+
+    public void setIdCuponAplicado(Integer idCuponAplicado) {
+        this.idCuponAplicado = idCuponAplicado;
+    }
+
+    public String getMensajePromocion() {
+        return mensajePromocion;
+    }
+
+    public void setMensajePromocion(String mensajePromocion) {
+        this.mensajePromocion = mensajePromocion;
     }
 
     public BigDecimal getMontoTotal() {

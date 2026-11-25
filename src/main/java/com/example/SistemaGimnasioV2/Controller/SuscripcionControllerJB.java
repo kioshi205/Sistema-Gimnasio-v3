@@ -41,7 +41,14 @@ public class SuscripcionControllerJB {
             return "PlanesJB/disenadorJB";
         }
         List<SubproductoJB> subproductos = servicio.buscarSubproductos(ids);
+        if (!servicio.tieneZonaEntrenamiento(subproductos)) {
+            model.addAttribute("error", "Debes seleccionar al menos un servicio de Zonas de Entrenamiento.");
+            model.addAttribute("subproductos", servicio.listarSubproductos());
+            return "PlanesJB/disenadorJB";
+        }
         model.addAttribute("subproductos", subproductos);
+        model.addAttribute("subtotal", servicio.subtotal(subproductos));
+        model.addAttribute("descuento", servicio.descuentoPersonalizado(subproductos));
         model.addAttribute("total", servicio.total(subproductos));
         model.addAttribute("ids", ids);
         return "PlanesJB/vista-previaJB";
@@ -83,25 +90,37 @@ public class SuscripcionControllerJB {
     public String resumen(@RequestParam int idCliente,
                           @RequestParam(required = false) Integer idPlan,
                           @RequestParam(required = false) List<Integer> ids,
+                          @RequestParam(required = false) String codigoCupon,
+                          @RequestParam(required = false) String dniReferente,
                           Model model) {
         if (!servicio.seleccionValida(idPlan, ids)) {
             return "redirect:/planes";
         }
-        model.addAttribute("resumen", servicio.armarResumen(idPlan, ids, idCliente));
+        model.addAttribute("resumen", servicio.armarResumen(idPlan, ids, idCliente, codigoCupon, dniReferente));
         model.addAttribute("idCliente", idCliente);
         model.addAttribute("idPlan", idPlan);
         model.addAttribute("ids", ids);
+        model.addAttribute("codigoCupon", codigoCupon);
+        model.addAttribute("dniReferente", dniReferente);
         return "SuscripcionesJB/confirmacionJB";
     }
 
     @PostMapping("/suscripciones/confirmar")
     public String confirmar(@RequestParam int idCliente,
                             @RequestParam(required = false) Integer idPlan,
-                            @RequestParam(required = false) List<Integer> ids) {
+                            @RequestParam(required = false) List<Integer> ids,
+                            @RequestParam(required = false) String codigoCupon,
+                            @RequestParam(required = false) String dniReferente) {
         if (!servicio.seleccionValida(idPlan, ids) || servicio.tieneSuscripcionVigente(idCliente)) {
             return "redirect:/planes";
         }
-        int idSuscripcion = servicio.confirmar(idPlan, ids, idCliente);
+        if (idPlan == null) {
+            List<SubproductoJB> subproductos = servicio.buscarSubproductos(ids);
+            if (!servicio.tieneZonaEntrenamiento(subproductos)) {
+                return "redirect:/planes/personalizado";
+            }
+        }
+        int idSuscripcion = servicio.confirmar(idPlan, ids, idCliente, codigoCupon, dniReferente);
         return "redirect:/suscripciones/exito?id=" + idSuscripcion;
     }
 
