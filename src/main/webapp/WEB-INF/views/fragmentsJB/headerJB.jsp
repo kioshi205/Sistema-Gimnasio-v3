@@ -12,11 +12,12 @@
     <aside class="lateral">
         <div class="marca">GIMNASIO</div>
         <nav class="lateral-menu">
-            <a class="activo" href="${pageContext.request.contextPath}/planes">SUSCRIPCION</a>
+            <a class="${menuActivo eq 'planes' ? '' : 'activo'}" href="${pageContext.request.contextPath}/planes">SUSCRIPCION</a>
+            <a class="${menuActivo eq 'planes' ? 'activo' : ''}" href="${pageContext.request.contextPath}/gestion-planes">GESTION DE PLANES
+            </a>
             <%-- Enlaces para que el equipo descomente cuando termine su módulo:
             <a href="${pageContext.request.contextPath}/suscripciones">Suscripciones</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
-            <a href="${pageContext.request.contextPath}/gestion-planes">Gestión de Planes</a>
             <a href="${pageContext.request.contextPath}/subproductos">Subproductos</a>
             <a href="${pageContext.request.contextPath}/categorias">Categorías</a>
             <a href="${pageContext.request.contextPath}/acceso">Control de Acceso</a>
