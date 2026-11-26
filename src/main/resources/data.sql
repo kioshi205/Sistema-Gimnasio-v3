@@ -15,7 +15,7 @@ INSERT INTO SUBPRODUCTO (id_subproducto, id_categoria, nombre_subproducto, preci
                                                                                                   (1, 1, 'Sala de máquinas y pesas', 50),
                                                                                                   (2, 1, 'Zona de cardio', 35),
                                                                                                   (3, 1, 'Zona funcional', 30),
-                                                                                                  (4, 2, 'Wifi gratis', 10),
+                                                                                                  (4, 2, 'Wifi', 10),
                                                                                                   (5, 2, 'Acceso al dispensador de agua purificada', 10),
                                                                                                   (6, 2, 'Zona de descanso y lounge', 15),
                                                                                                   (7, 2, 'Estación de carga de celulares', 10),
@@ -75,6 +75,6 @@ ALTER TABLE CATEGORIA ALTER COLUMN id_categoria RESTART WITH 7;
 ALTER TABLE SUBPRODUCTO ALTER COLUMN id_subproducto RESTART WITH 21;
 ALTER TABLE PLAN_SUBPRODUCTO ALTER COLUMN id_plan_subproducto RESTART WITH 29;
 ALTER TABLE CLIENTE ALTER COLUMN id_cliente RESTART WITH 5;
-ALTER TABLE CUPON ALTER COLUMN id_cupon RESTART WITH 3;
+ALTER TABLE CUPON ALTER COLUMN id_cupon RESTART WITH 5;
 ALTER TABLE SUSCRIPCION ALTER COLUMN id_suscripcion RESTART WITH 5;
 ALTER TABLE MARCACION_ACCESO ALTER COLUMN id_acceso RESTART WITH 5;
