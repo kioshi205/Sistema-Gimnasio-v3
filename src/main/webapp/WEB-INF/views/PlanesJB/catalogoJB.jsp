@@ -13,7 +13,7 @@
 
 <div class="grid">
     <c:forEach var="plan" items="${planes}">
-        <div class="card">
+        <div class="card <c:if test='${!plan.disponible}'>bloqueada</c:if>">
             <h2>${plan.nombrePlan}</h2>
             <div class="precio">S/ <fmt:formatNumber value="${plan.precioBase}" minFractionDigits="2" maxFractionDigits="2"/></div>
             <small>${plan.duracionDias} días</small>
@@ -22,7 +22,22 @@
                     <li>${servicio}</li>
                 </c:forEach>
             </ul>
-            <a class="btn" href="${pageContext.request.contextPath}/clientes/registro?idPlan=${plan.idPlan}">Elegir plan</a>
+
+            <c:choose>
+                <c:when test="${plan.disponible}">
+                    <a class="btn" href="${pageContext.request.contextPath}/clientes/registro?idPlan=${plan.idPlan}">Elegir plan</a>
+                </c:when>
+                <c:otherwise>
+                    <div class="error">
+                        <p><strong>No disponible temporalmente</strong></p>
+                        <p>Servicio desactivado:
+                            <c:forEach var="inactivo" items="${plan.serviciosInactivos}" varStatus="estado">
+                                ${inactivo}<c:if test="${!estado.last}">, </c:if>
+                            </c:forEach>
+                        </p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </c:forEach>
 

@@ -15,7 +15,7 @@ INSERT INTO SUBPRODUCTO (id_subproducto, id_categoria, nombre_subproducto, preci
                                                                                                   (1, 1, 'Sala de máquinas y pesas', 50),
                                                                                                   (2, 1, 'Zona de cardio', 35),
                                                                                                   (3, 1, 'Zona funcional', 30),
-                                                                                                  (4, 2, 'Wifi gratis', 10),
+                                                                                                  (4, 2, 'Wifi', 10),
                                                                                                   (5, 2, 'Acceso al dispensador de agua purificada', 10),
                                                                                                   (6, 2, 'Zona de descanso y lounge', 15),
                                                                                                   (7, 2, 'Estación de carga de celulares', 10),
@@ -53,8 +53,10 @@ INSERT INTO CLIENTE (id_cliente, dni, nombre, apellido, telefono, email) VALUES
                                                                              (4, '71001122', 'Andrés', 'Tovar Gómez', '912345010', 'andres.tovar@correo.pe');
 
 INSERT INTO CUPON (id_cupon, codigo, descripcion, porcentaje_descuento, fecha_inicio, fecha_fin, estado) VALUES
-                                                                                                             (1, 'BIENVENIDA10', 'Descuento de bienvenida para nuevos socios', 10, '2026-11-01', '2026-12-31', 'ACTIVO'),
-                                                                                                             (2, 'VERANO15', 'Promoción campaña de verano', 15, '2027-01-01', '2027-02-28', 'ACTIVO');
+(1, 'BIENVENIDA10', 'Descuento de bienvenida para nuevos socios', 10, '2026-11-01', '2026-12-31', 'ACTIVO'),
+(2, 'VERANO15', 'Promoción campaña de verano', 15, '2027-01-01', '2027-02-28', 'ACTIVO'),
+(3, 'CAMPAÑA25', 'Descuento promocional de campaña 25%', 25, '2026-11-01', '2027-12-31', 'ACTIVO'),
+(4, 'VENCIDO25', 'Cupón de prueba vencido', 25, '2026-01-01', '2026-01-31', 'ACTIVO');
 
 INSERT INTO SUSCRIPCION (id_suscripcion, id_cliente, id_plan, id_cupon, detalle, fecha_inicio, fecha_fin, monto_total) VALUES
                                                                                                                            (1, 1, 2, NULL, 'Sala de máquinas y pesas; Zona de cardio; Wifi gratis; Acceso al dispensador de agua purificada; Zona de descanso y lounge; Ingreso a las duchas; Uso de casilleros; Equipo de entrenamiento y lavado', '2026-09-01', '2026-10-01', 195),
@@ -73,6 +75,6 @@ ALTER TABLE CATEGORIA ALTER COLUMN id_categoria RESTART WITH 7;
 ALTER TABLE SUBPRODUCTO ALTER COLUMN id_subproducto RESTART WITH 21;
 ALTER TABLE PLAN_SUBPRODUCTO ALTER COLUMN id_plan_subproducto RESTART WITH 29;
 ALTER TABLE CLIENTE ALTER COLUMN id_cliente RESTART WITH 5;
-ALTER TABLE CUPON ALTER COLUMN id_cupon RESTART WITH 3;
+ALTER TABLE CUPON ALTER COLUMN id_cupon RESTART WITH 5;
 ALTER TABLE SUSCRIPCION ALTER COLUMN id_suscripcion RESTART WITH 5;
 ALTER TABLE MARCACION_ACCESO ALTER COLUMN id_acceso RESTART WITH 5;

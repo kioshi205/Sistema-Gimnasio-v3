@@ -18,6 +18,16 @@
             <span>S/ <fmt:formatNumber value="${subproducto.precioIndividual}" minFractionDigits="2" maxFractionDigits="2"/></span>
         </div>
     </c:forEach>
+    <c:if test="${descuento > 0}">
+        <div class="fila">
+            <span>Subtotal</span>
+            <span>S/ <fmt:formatNumber value="${subtotal}" minFractionDigits="2" maxFractionDigits="2"/></span>
+        </div>
+        <div class="fila">
+            <span>Descuento 15% (5 o más subproductos)</span>
+            <span>- S/ <fmt:formatNumber value="${descuento}" minFractionDigits="2" maxFractionDigits="2"/></span>
+        </div>
+    </c:if>
     <div class="total">
         <span>Total</span>
         <span>S/ <fmt:formatNumber value="${total}" minFractionDigits="2" maxFractionDigits="2"/></span>

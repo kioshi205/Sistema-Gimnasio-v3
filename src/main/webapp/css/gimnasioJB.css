@@ -303,7 +303,8 @@ h1 {
     font-size: 0.9rem;
 }
 
-.formulario input {
+.formulario input,
+.formulario select {
     width: 100%;
     padding: 12px 14px;
     border: 2px solid var(--borde);
@@ -311,7 +312,8 @@ h1 {
     font-size: 1rem;
 }
 
-.formulario input:focus {
+.formulario input:focus,
+.formulario select:focus {
     outline: none;
     border-color: var(--cian);
     box-shadow: 0 0 0 4px var(--cian-sombra);
@@ -321,6 +323,34 @@ h1 {
     display: block;
     margin-top: 14px;
     color: var(--gris);
+}
+
+.panel table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.panel th,
+.panel td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--borde);
+    vertical-align: middle;
+}
+
+.panel th {
+    color: var(--cian-oscuro);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+}
+
+.panel td .error {
+    display: inline-block;
+    margin: 0;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 .error {
@@ -480,5 +510,9 @@ h1 {
 
     .portada h1 {
         font-size: 2rem;
+    }
+    .card.bloqueada {
+        opacity: 0.78;
+        border-top-color: #e5484d;
     }
 }
