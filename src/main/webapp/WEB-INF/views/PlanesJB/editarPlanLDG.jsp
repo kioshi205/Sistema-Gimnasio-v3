@@ -7,7 +7,7 @@
 
 <div class="titulo-pagina">
     <h1>Editar plan</h1>
-    <span class="codigo">INT13</span>
+    <span class="codigo">F13</span>
 </div>
 <p class="sub">Plan <strong><c:out value="${plan.nombrePlan}"/></strong>. Marca los subproductos que incluye.</p>
 

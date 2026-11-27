@@ -32,14 +32,14 @@
             <a class="${esCore ? 'activo' : ''}"
                href="${pageContext.request.contextPath}/planes">Suscripción</a>
 
-            <a class="${fn:startsWith(rutaActual, '/gestion-planes') ? 'activo' : ''}"
-               href="${pageContext.request.contextPath}/gestion-planes">Gestión de Planes</a>
-
             <a class="${fn:startsWith(rutaActual, '/categorias') ? 'activo' : ''}"
                href="${pageContext.request.contextPath}/categorias">Categorías</a>
 
             <a class="${fn:startsWith(rutaActual, '/subproductos') ? 'activo' : ''}"
                href="${pageContext.request.contextPath}/subproductos">Subproductos</a>
+
+            <a class="${fn:startsWith(rutaActual, '/gestion-planes') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/gestion-planes">Gestión de Planes</a>
 
             <a class="${rutaActual == '/seguimiento/clientes' or fn:startsWith(rutaActual, '/seguimiento/cliente/') ? 'activo' : ''}"
                href="${pageContext.request.contextPath}/seguimiento/clientes">Clientes</a>

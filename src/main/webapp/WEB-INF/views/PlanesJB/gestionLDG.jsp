@@ -7,7 +7,7 @@
 
 <div class="titulo-pagina">
     <h1>Gestión de Planes</h1>
-    <span class="codigo">INT12</span>
+    <span class="codigo">F12</span>
 </div>
 <p class="sub">Consulta y actualiza los subproductos incluidos en los planes predeterminados del gimnasio.</p>
 

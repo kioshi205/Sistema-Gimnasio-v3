@@ -7,7 +7,7 @@
 
 <div class="titulo-pagina">
     <h1>Control y registro de acceso</h1>
-    <span class="codigo">INT20</span>
+    <span class="codigo">F20</span>
 </div>
 <p class="sub">Ingresa el DNI del cliente y presiona verificar.</p>
 

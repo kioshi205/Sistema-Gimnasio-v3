@@ -7,7 +7,7 @@
 
 <div class="titulo-pagina">
     <h1>Crear cupón de descuento</h1>
-    <span class="codigo">INT21</span>
+    <span class="codigo">F21</span>
 </div>
 <p class="sub">Registra un cupón promocional del ${porcentajeCupon}% para canjearlo en la confirmación de la suscripción.</p>
 
