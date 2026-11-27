@@ -20,23 +20,15 @@ public class SeguimientoControllerMA {
     }
 
     @GetMapping("/clientes")
-    public String clientes(
-            @RequestParam(required = false) String buscar,
-            Model model) {
-
+    public String clientes(@RequestParam(required = false) String buscar, Model model) {
         model.addAttribute("clientes", service.listarClientes(buscar));
         model.addAttribute("buscar", buscar);
-
         return "seguimientoMA/clientesMA";
     }
 
     @GetMapping("/cliente/editar/{id}")
-    public String editarCliente(
-            @PathVariable int id,
-            Model model,
-            RedirectAttributes ra) {
-
-        Map<String,Object> cliente = service.buscarCliente(id);
+    public String editarCliente(@PathVariable int id, Model model, RedirectAttributes ra) {
+        Map<String, Object> cliente = service.buscarCliente(id);
 
         if (cliente == null) {
             ra.addFlashAttribute("error", "Cliente no encontrado.");
@@ -44,7 +36,6 @@ public class SeguimientoControllerMA {
         }
 
         model.addAttribute("cliente", cliente);
-
         return "seguimientoMA/editarClienteMA";
     }
 
@@ -58,14 +49,12 @@ public class SeguimientoControllerMA {
             @RequestParam(required = false) String email,
             RedirectAttributes ra) {
 
-        String error = service.actualizarCliente(
-                idCliente, dni, nombre, apellido, telefono, email);
+        String error = service.actualizarCliente(idCliente, dni, nombre, apellido, telefono, email);
 
         if (error != null) {
             ra.addFlashAttribute("error", error);
         } else {
-            ra.addFlashAttribute(
-                    "mensaje", "Cliente actualizado correctamente.");
+            ra.addFlashAttribute("mensaje", "Cliente actualizado correctamente.");
         }
 
         return "redirect:/seguimiento/cliente/editar/" + idCliente;
@@ -77,9 +66,7 @@ public class SeguimientoControllerMA {
             @RequestParam(required = false) String estado,
             Model model) {
 
-        model.addAttribute(
-                "suscripciones", service.listarSuscripciones(buscar, estado));
-
+        model.addAttribute("suscripciones", service.listarSuscripciones(buscar, estado));
         model.addAttribute("buscar", buscar);
         model.addAttribute("estado", estado);
 
@@ -87,12 +74,8 @@ public class SeguimientoControllerMA {
     }
 
     @GetMapping("/historial/{idCliente}")
-    public String historial(
-            @PathVariable int idCliente,
-            Model model,
-            RedirectAttributes ra) {
-
-        Map<String,Object> cliente = service.buscarCliente(idCliente);
+    public String historial(@PathVariable int idCliente, Model model, RedirectAttributes ra) {
+        Map<String, Object> cliente = service.buscarCliente(idCliente);
 
         if (cliente == null) {
             ra.addFlashAttribute("error", "Cliente no encontrado.");
@@ -106,20 +89,22 @@ public class SeguimientoControllerMA {
     }
 
     @GetMapping("/renovar/{id}")
-    public String renovar(
-            @PathVariable int id,
-            Model model,
-            RedirectAttributes ra) {
-
-        Map<String,Object> suscripcion = service.buscarSuscripcion(id);
+    public String renovar(@PathVariable int id, Model model, RedirectAttributes ra) {
+        Map<String, Object> suscripcion = service.buscarSuscripcion(id);
 
         if (suscripcion == null) {
             ra.addFlashAttribute("error", "Suscripción no encontrada.");
             return "redirect:/seguimiento/suscripciones";
         }
 
-        model.addAttribute("suscripcion", suscripcion);
+        String estado = String.valueOf(suscripcion.get("ESTADO_SUSCRIPCION"));
 
+        if (!"Vencida".equals(estado) && !"Por vencer".equals(estado)) {
+            ra.addFlashAttribute("error", "Solo se pueden renovar suscripciones por vencer o vencidas.");
+            return "redirect:/seguimiento/suscripciones";
+        }
+
+        model.addAttribute("suscripcion", suscripcion);
         return "seguimientoMA/renovarSuscripcionMA";
     }
 
@@ -133,20 +118,15 @@ public class SeguimientoControllerMA {
         if (error != null) {
             ra.addFlashAttribute("error", error);
         } else {
-            ra.addFlashAttribute(
-                    "mensaje", "Renovación registrada correctamente.");
+            ra.addFlashAttribute("mensaje", "La suscripción se renovó correctamente.");
         }
 
         return "redirect:/seguimiento/suscripciones";
     }
 
     @GetMapping("/mejorar/{id}")
-    public String mejorar(
-            @PathVariable int id,
-            Model model,
-            RedirectAttributes ra) {
-
-        Map<String,Object> suscripcion = service.buscarSuscripcion(id);
+    public String mejorar(@PathVariable int id, Model model, RedirectAttributes ra) {
+        Map<String, Object> suscripcion = service.buscarSuscripcion(id);
 
         if (suscripcion == null) {
             ra.addFlashAttribute("error", "Suscripción no encontrada.");
@@ -158,9 +138,7 @@ public class SeguimientoControllerMA {
         model.addAttribute("suscripcion", suscripcion);
         model.addAttribute("planes", service.listarPlanesMayores(monto));
         model.addAttribute("subproductos", service.listarSubproductos());
-        model.addAttribute(
-                "subproductosActuales",
-                service.obtenerSubproductosActuales(suscripcion));
+        model.addAttribute("subproductosActuales", service.obtenerSubproductosActuales(suscripcion));
 
         return "seguimientoMA/mejorarPlanMA";
     }
@@ -172,14 +150,12 @@ public class SeguimientoControllerMA {
             @RequestParam(required = false) String[] adicionales,
             RedirectAttributes ra) {
 
-        String error = service.mejorarPlan(
-                idSuscripcion, idPlanNuevo, adicionales);
+        String error = service.mejorarPlan(idSuscripcion, idPlanNuevo, adicionales);
 
         if (error != null) {
             ra.addFlashAttribute("error", error);
         } else {
-            ra.addFlashAttribute(
-                    "mensaje", "El plan se mejoró correctamente.");
+            ra.addFlashAttribute("mensaje", "El plan se mejoró correctamente.");
         }
 
         return "redirect:/seguimiento/suscripciones";

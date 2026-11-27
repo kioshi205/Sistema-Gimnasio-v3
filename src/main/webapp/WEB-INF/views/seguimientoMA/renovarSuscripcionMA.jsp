@@ -3,48 +3,62 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<jsp:include page="/WEB-INF/views/fragmentsJB/headerJB.jsp">
-    <jsp:param name="titulo" value="Renovar suscripción"/>
-</jsp:include>
+<jsp:include page="/WEB-INF/views/fragmentsJB/headerJB.jsp"/>
 
-<h2 class="titulo-pagina">RENOVAR SUSCRIPCIÓN</h2>
-<p class="sub">Registrar un nuevo periodo de suscripción para el cliente.</p>
+<div class="titulo-pagina">
+    <h1>Renovar suscripción</h1>
+    <span class="codigo">RENOVACIÓN</span>
+</div>
+
+<p class="sub">Renueva la vigencia de la suscripción seleccionada.</p>
+
+<c:if test="${not empty error}">
+    <div class="error">
+        <p><c:out value="${error}"/></p>
+    </div>
+</c:if>
 
 <div class="panel">
-    <h3>Datos de la suscripción anterior</h3>
+    <h3>Información de la suscripción</h3>
 
-    <div class="grid">
-        <div class="item">
-            <strong>Cliente</strong>
-            <p>${suscripcion.NOMBRE} ${suscripcion.APELLIDO}</p>
-        </div>
+    <div class="fila">
+        <strong>Código</strong>
+        <span><c:out value="${suscripcion['ID_SUSCRIPCION']}"/></span>
+    </div>
 
-        <div class="item">
-            <strong>DNI</strong>
-            <p>${suscripcion.DNI}</p>
-        </div>
+    <div class="fila">
+        <strong>Cliente</strong>
+        <span><c:out value="${suscripcion['NOMBRE']}"/> <c:out value="${suscripcion['APELLIDO']}"/></span>
+    </div>
 
-        <div class="item">
-            <strong>Plan anterior</strong>
-            <p>${suscripcion.NOMBRE_PLAN}</p>
-        </div>
+    <div class="fila">
+        <strong>DNI</strong>
+        <span><c:out value="${suscripcion['DNI']}"/></span>
+    </div>
 
-        <div class="item">
-            <strong>Fecha de vencimiento</strong>
-            <p>${suscripcion.FECHA_FIN}</p>
-        </div>
+    <div class="fila">
+        <strong>Plan</strong>
+        <span><c:out value="${suscripcion['NOMBRE_PLAN']}"/></span>
+    </div>
 
-        <div class="item">
-            <strong>Monto anterior</strong>
-            <p>
-                S/ <fmt:formatNumber value="${suscripcion.MONTO_TOTAL}" minFractionDigits="2"/>
-            </p>
-        </div>
+    <div class="fila">
+        <strong>Fecha de vencimiento</strong>
+        <span><c:out value="${suscripcion['FECHA_FIN']}"/></span>
+    </div>
 
-        <div class="item">
-            <strong>Estado</strong>
-            <p>${suscripcion.ESTADO_SUSCRIPCION}</p>
-        </div>
+    <div class="fila">
+        <strong>Duración</strong>
+        <span><c:out value="${suscripcion['DURACION_DIAS']}"/> días</span>
+    </div>
+
+    <div class="fila">
+        <strong>Monto</strong>
+        <span>S/ <fmt:formatNumber value="${suscripcion['MONTO_TOTAL']}" minFractionDigits="2"/></span>
+    </div>
+
+    <div class="fila">
+        <strong>Estado</strong>
+        <span style="display:inline-block;padding:7px 12px;border-radius:999px;background:#fff1f2;color:#b4233a;font-weight:700;">Vencida</span>
     </div>
 </div>
 
@@ -52,32 +66,19 @@
     <h3>Confirmar renovación</h3>
 
     <p class="descripcion">
-        La renovación conservará el plan y los servicios registrados.
-        Se creará una nueva suscripción por 30 días.
-        La suscripción anterior permanecerá en el historial.
+        Al confirmar, se actualizarán las fechas de inicio y vencimiento de esta misma suscripción.
     </p>
 
+    <div class="mensaje-info">
+        No se creará una nueva suscripción. Se conservarán los datos del cliente, el plan y el monto.
+    </div>
+
     <form method="post" action="${pageContext.request.contextPath}/seguimiento/renovar/confirmar">
-        <input type="hidden" name="idSuscripcion" value="${suscripcion.ID_SUSCRIPCION}">
+        <input type="hidden" name="idSuscripcion" value="${suscripcion['ID_SUSCRIPCION']}">
 
-        <div class="item">
-            <strong>Duración</strong>
-            <p>30 días</p>
-        </div>
-
-        <div class="item">
-            <strong>Monto de renovación</strong>
-            <p>
-                S/ <fmt:formatNumber value="${suscripcion.MONTO_TOTAL}" minFractionDigits="2"/>
-            </p>
-        </div>
-
-        <div class="acciones" style="margin-top:20px;">
+        <div class="acciones">
             <button type="submit" class="btn">Confirmar renovación</button>
-
-            <a class="btn sec" href="${pageContext.request.contextPath}/seguimiento/suscripciones">
-                Cancelar
-            </a>
+            <a href="${pageContext.request.contextPath}/seguimiento/suscripciones" class="btn sec">Cancelar</a>
         </div>
     </form>
 </div>

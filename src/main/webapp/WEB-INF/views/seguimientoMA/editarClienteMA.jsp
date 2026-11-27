@@ -2,46 +2,54 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<jsp:include page="/WEB-INF/views/fragmentsJB/headerJB.jsp">
-    <jsp:param name="titulo" value="Editar cliente"/>
-</jsp:include>
+<jsp:include page="/WEB-INF/views/fragmentsJB/headerJB.jsp"/>
 
-<h2 class="titulo-pagina">EDITAR DATOS DEL CLIENTE</h2>
-<p class="sub">Actualización de la información personal del cliente.</p>
+<div class="titulo-pagina">
+    <h1>Actualizar cliente</h1>
+    <span class="codigo">CLIENTES</span>
+</div>
+
+<p class="sub">Modifica la información personal del cliente.</p>
+
+<c:if test="${not empty mensaje}">
+    <div class="panel">
+        <div class="exito">
+            <p><c:out value="${mensaje}"/></p>
+        </div>
+    </div>
+</c:if>
 
 <c:if test="${not empty error}">
-    <div class="error">${error}</div>
+    <div class="error">
+        <p><c:out value="${error}"/></p>
+    </div>
 </c:if>
 
 <div class="panel">
-    <form method="post" action="${pageContext.request.contextPath}/seguimiento/cliente/guardar">
+    <h3>Datos del cliente</h3>
 
-        <input type="hidden" name="idCliente" value="${cliente.ID_CLIENTE}">
+    <form method="post" action="${pageContext.request.contextPath}/seguimiento/cliente/guardar" class="formulario">
 
-        <div class="formulario">
-            <label>DNI</label>
-            <input type="text" value="${cliente.DNI}" readonly>
-            <small>El DNI no se puede modificar.</small>
+        <input type="hidden" name="idCliente" value="${cliente['ID_CLIENTE']}">
 
-            <label>Nombre</label>
-            <input type="text" name="nombre" value="${cliente.NOMBRE}" required maxlength="100">
+        <label>DNI</label>
+        <input type="text" name="dni" maxlength="8" required value="${cliente['DNI']}">
 
-            <label>Apellido</label>
-            <input type="text" name="apellido" value="${cliente.APELLIDO}" required maxlength="100">
+        <label>Nombre</label>
+        <input type="text" name="nombre" required value="${cliente['NOMBRE']}">
 
-            <label>Teléfono</label>
-            <input type="text" name="telefono" value="${cliente.TELEFONO}"
-                   pattern="[0-9]{9}" maxlength="9" required>
+        <label>Apellido</label>
+        <input type="text" name="apellido" required value="${cliente['APELLIDO']}">
 
-            <label>Correo electrónico</label>
-            <input type="email" name="email" value="${cliente.EMAIL}" required maxlength="150">
-        </div>
+        <label>Teléfono</label>
+        <input type="text" name="telefono" maxlength="9" value="${cliente['TELEFONO']}">
 
-        <div class="acciones" style="margin-top:20px;">
+        <label>Correo electrónico</label>
+        <input type="email" name="email" value="${cliente['EMAIL']}">
+
+        <div class="acciones">
             <button type="submit" class="btn">Guardar cambios</button>
-            <a class="btn sec" href="${pageContext.request.contextPath}/seguimiento/clientes">
-                Cancelar
-            </a>
+            <a href="${pageContext.request.contextPath}/seguimiento/clientes" class="btn sec">Volver</a>
         </div>
     </form>
 </div>
