@@ -22,30 +22,12 @@ public class GimnasioRepositoryJB {
     public GimnasioRepositoryJB(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
-    /*
-    private static final String SQL_SUBPRODUCTOS =
-            "SELECT s.id_subproducto, s.id_categoria, c.nombre_categoria, s.nombre_subproducto, s.precio_individual " +
-                    "FROM SUBPRODUCTO s JOIN CATEGORIA c ON c.id_categoria = s.id_categoria ";
 
-     */
     private static final String SQL_SUBPRODUCTOS =
             "SELECT s.id_subproducto, s.id_categoria, c.nombre_categoria, " +
                     "s.nombre_subproducto, s.precio_individual, s.estado " +
                     "FROM SUBPRODUCTO s JOIN CATEGORIA c ON c.id_categoria = s.id_categoria ";
-    /*
-    public List<PlanJB> listarPlanes() {
-        return jdbc.query(
-                "SELECT id_plan, nombre_plan, descripcion, precio_base, duracion_dias FROM PLAN ORDER BY precio_base",
-                new BeanPropertyRowMapper<>(PlanJB.class));
-    }
 
-    public PlanJB buscarPlan(int idPlan) {
-        return jdbc.queryForObject(
-                "SELECT id_plan, nombre_plan, descripcion, precio_base, duracion_dias FROM PLAN WHERE id_plan = ?",
-                new BeanPropertyRowMapper<>(PlanJB.class), idPlan);
-    }
-
-     */
     public List<String> listarServiciosPorPlan(int idPlan) {
         String sql = "SELECT s.nombre_subproducto " +
                 "FROM PLAN_SUBPRODUCTO ps " +
@@ -82,13 +64,6 @@ public class GimnasioRepositoryJB {
         plan.setDisponible(inactivos.isEmpty());
         return plan;
     }
-
-    /*public List<SubproductoJB> listarSubproductos() {
-        return jdbc.query(
-                SQL_SUBPRODUCTOS + "ORDER BY s.id_subproducto",
-                new BeanPropertyRowMapper<>(SubproductoJB.class));
-    }
-     */
 
     public List<SubproductoJB> listarSubproductos() {
         String sql = SQL_SUBPRODUCTOS +

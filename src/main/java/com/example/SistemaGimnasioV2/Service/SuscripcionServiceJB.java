@@ -40,7 +40,7 @@ public class SuscripcionServiceJB {
     public List<SubproductoJB> buscarSubproductos(List<Integer> ids) {
         return repo.buscarSubproductos(ids);
     }
-    // RN02: Un plan predeterminado solo se puede vender si todos sus servicios y categorías están activos
+
     public boolean planDisponible(int idPlan) {
         List<String> inactivos = repo.listarServiciosInactivosPorPlan(idPlan);
         return inactivos.isEmpty();
@@ -63,7 +63,7 @@ public class SuscripcionServiceJB {
         return false;
     }
 
-    // Suma directa de precios individuales sin descuento
+
     public BigDecimal subtotal(List<SubproductoJB> subproductos) {
         BigDecimal suma = BigDecimal.ZERO;
         for (SubproductoJB s : subproductos) {
@@ -72,7 +72,7 @@ public class SuscripcionServiceJB {
         return suma;
     }
 
-    // RN03: 15% de descuento si el plan personalizado tiene 5 o más subproductos
+
     public BigDecimal descuentoPersonalizado(List<SubproductoJB> subproductos) {
         if (subproductos.size() >= MINIMO_SUBPRODUCTOS_DESCUENTO) {
             BigDecimal suma = subtotal(subproductos);
@@ -81,7 +81,7 @@ public class SuscripcionServiceJB {
         return BigDecimal.ZERO;
     }
 
-    // Total final del plan personalizado (subtotal - descuento RN03)
+
     public BigDecimal total(List<SubproductoJB> subproductos) {
         BigDecimal suma = subtotal(subproductos);
         BigDecimal descuento = descuentoPersonalizado(subproductos);
@@ -166,7 +166,7 @@ public class SuscripcionServiceJB {
 
         BigDecimal montoBase = subtotalPlan.subtract(descuentoPers);
 
-        // Evaluar promociones excluyentes: RN01 (Cupón) o RN05 (Referido)
+
         aplicarPromocion(resumen, idCliente, montoBase, hoy, codigoCupon, dniReferente);
 
         return resumen;
@@ -177,14 +177,14 @@ public class SuscripcionServiceJB {
         String cuponLimpio = texto(codigoCupon);
         String dniRefLimpio = texto(dniReferente);
 
-        // Regla de exclusividad: no se pueden usar cupón y referido juntos
+
         if (!cuponLimpio.isEmpty() && !dniRefLimpio.isEmpty()) {
             resumen.setMensajePromocion("No se puede combinar un cupón promocional con el descuento por referido. Ingresa solo uno.");
             resumen.setMontoTotal(montoBase);
             return;
         }
 
-        // RN01: Descuento del 25% por cupón promocional vigente y sin uso previo
+
         if (!cuponLimpio.isEmpty()) {
             CuponJB cupon = repo.buscarCuponPorCodigo(cuponLimpio);
 
@@ -220,7 +220,7 @@ public class SuscripcionServiceJB {
             return;
         }
 
-        // RN05: Descuento del 50% para nuevo cliente referido por socio vigente
+
         if (!dniRefLimpio.isEmpty()) {
             if (repo.contarSuscripcionesCliente(idCliente) > 0) {
                 resumen.setMensajePromocion("El descuento por referido aplica solo para clientes nuevos sin suscripciones previas.");
@@ -258,7 +258,7 @@ public class SuscripcionServiceJB {
             return;
         }
 
-        // Sin cupón ni referido: se cobra el monto base
+
         resumen.setMontoTotal(montoBase);
     }
 
