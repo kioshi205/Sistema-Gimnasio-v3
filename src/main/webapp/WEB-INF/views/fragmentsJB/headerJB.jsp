@@ -42,14 +42,39 @@
                 </c:otherwise>
             </c:choose>
 
+            <c:choose>
+                <c:when test="${rutaActual == '/acceso' or rutaActual == '/acceso/verificar'}">
+                    <a class="activo" href="${pageContext.request.contextPath}/acceso">CONTROL DE ACCESO</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/acceso">CONTROL DE ACCESO</a>
+                </c:otherwise>
+            </c:choose>
+
+            <c:choose>
+                <c:when test="${rutaActual == '/cupones/nuevo'}">
+                    <a class="activo" href="${pageContext.request.contextPath}/cupones/nuevo">CUPONES</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/cupones/nuevo">CUPONES</a>
+                </c:otherwise>
+            </c:choose>
+
+            <c:choose>
+                <c:when test="${rutaActual == '/metricas'}">
+                    <a class="activo" href="${pageContext.request.contextPath}/metricas">MÉTRICAS</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/metricas">MÉTRICAS</a>
+                </c:otherwise>
+            </c:choose>
+
             <%-- Enlaces para que el equipo descomente cuando termine su módulo:
             <a href="${pageContext.request.contextPath}/suscripciones">Suscripciones</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
             <a href="${pageContext.request.contextPath}/gestion-planes">Gestión de Planes</a>
             <a href="${pageContext.request.contextPath}/subproductos">Subproductos</a>
             <a href="${pageContext.request.contextPath}/categorias">Categorías</a>
-            <a href="${pageContext.request.contextPath}/acceso">Control de Acceso</a>
-            <a href="${pageContext.request.contextPath}/cupones/nuevo">Cupones</a>
             --%>
         </nav>
         <div class="lateral-usuario">
