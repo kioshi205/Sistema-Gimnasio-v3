@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,84 +11,60 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/gimnasioJB.css">
 </head>
 <body>
+
 <div class="app">
+
     <aside class="lateral">
+
         <div class="marca">GIMNASIO</div>
+
         <nav class="lateral-menu">
-            <c:set var="rutaActual" value="${requestScope['jakarta.servlet.forward.servlet_path']}"/>
 
-            <c:choose>
-                <c:when test="${rutaActual == '/planes' or rutaActual == '/planes/personalizado' or rutaActual == '/planes/personalizado/vista-previa' or rutaActual == '/clientes/registro' or rutaActual == '/suscripciones/resumen' or rutaActual == '/suscripciones/exito'}">
-                    <a class="activo" href="${pageContext.request.contextPath}/planes">SUSCRIPCION</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/planes">SUSCRIPCION</a>
-                </c:otherwise>
-            </c:choose>
+            <c:set var="rutaActual"
+                   value="${requestScope['jakarta.servlet.forward.servlet_path']}"/>
 
-            <c:choose>
-                <c:when test="${fn:startsWith(rutaActual, '/gestion-planes')}">
-                    <a class="activo" href="${pageContext.request.contextPath}/gestion-planes">GESTION DE PLANES</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/gestion-planes">GESTION DE PLANES</a>
-                </c:otherwise>
-            </c:choose>
+            <c:set var="esCore"
+                   value="${rutaActual == '/planes'
+                           or fn:startsWith(rutaActual, '/planes/personalizado')
+                           or rutaActual == '/clientes/registro'
+                           or fn:startsWith(rutaActual, '/suscripciones/')}"/>
 
-            <c:choose>
-                <c:when test="${rutaActual == '/categorias' or rutaActual == '/categorias/registrar' or rutaActual == '/categorias/editar'}">
-                    <a class="activo" href="${pageContext.request.contextPath}/categorias">CATEGORÍAS</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/categorias">CATEGORÍAS</a>
-                </c:otherwise>
-            </c:choose>
+            <a class="${esCore ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/planes">Suscripción</a>
 
-            <c:choose>
-                <c:when test="${rutaActual == '/subproductos' or rutaActual == '/subproductos/registrar' or rutaActual == '/subproductos/editar'}">
-                    <a class="activo" href="${pageContext.request.contextPath}/subproductos">SUBPRODUCTOS</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/subproductos">SUBPRODUCTOS</a>
-                </c:otherwise>
-            </c:choose>
+            <a class="${fn:startsWith(rutaActual, '/gestion-planes') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/gestion-planes">Gestión de Planes</a>
 
-            <c:choose>
-                <c:when test="${rutaActual == '/acceso' or rutaActual == '/acceso/verificar'}">
-                    <a class="activo" href="${pageContext.request.contextPath}/acceso">CONTROL DE ACCESO</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/acceso">CONTROL DE ACCESO</a>
-                </c:otherwise>
-            </c:choose>
+            <a class="${fn:startsWith(rutaActual, '/categorias') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/categorias">Categorías</a>
 
-            <c:choose>
-                <c:when test="${rutaActual == '/cupones/nuevo'}">
-                    <a class="activo" href="${pageContext.request.contextPath}/cupones/nuevo">CUPONES</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/cupones/nuevo">CUPONES</a>
-                </c:otherwise>
-            </c:choose>
+            <a class="${fn:startsWith(rutaActual, '/subproductos') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/subproductos">Subproductos</a>
 
-            <c:choose>
-                <c:when test="${rutaActual == '/metricas'}">
-                    <a class="activo" href="${pageContext.request.contextPath}/metricas">MÉTRICAS</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/metricas">MÉTRICAS</a>
-                </c:otherwise>
-            </c:choose>
+            <a class="${rutaActual == '/seguimiento/clientes' or fn:startsWith(rutaActual, '/seguimiento/cliente/') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/seguimiento/clientes">Clientes</a>
 
-            <%-- Enlaces para que el equipo descomente cuando termine su módulo:
-            <a href="${pageContext.request.contextPath}/suscripciones">Suscripciones</a>
-            <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
-            <a href="${pageContext.request.contextPath}/subproductos">Subproductos</a>
-            <a href="${pageContext.request.contextPath}/categorias">Categorías</a>
-            --%>
+            <a class="${rutaActual == '/seguimiento/suscripciones'
+                        or fn:startsWith(rutaActual, '/seguimiento/historial')
+                        or fn:startsWith(rutaActual, '/seguimiento/renovar')
+                        or fn:startsWith(rutaActual, '/seguimiento/mejorar') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/seguimiento/suscripciones">Suscripciones</a>
+
+            <a class="${fn:startsWith(rutaActual, '/acceso') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/acceso">Control de Acceso</a>
+
+            <a class="${fn:startsWith(rutaActual, '/cupones') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/cupones/nuevo">Cupones</a>
+
+            <a class="${fn:startsWith(rutaActual, '/metricas') ? 'activo' : ''}"
+               href="${pageContext.request.contextPath}/metricas">Métricas</a>
+
         </nav>
+
         <div class="lateral-usuario">
             <a href="${pageContext.request.contextPath}/">Cerrar sesión</a>
         </div>
+
     </aside>
+
     <main class="contenido">
