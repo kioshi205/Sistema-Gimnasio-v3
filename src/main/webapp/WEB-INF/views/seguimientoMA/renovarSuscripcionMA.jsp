@@ -7,7 +7,7 @@
 
 <div class="titulo-pagina">
     <h1>Renovar suscripción</h1>
-    <span class="codigo">RENOVACIÓN</span>
+    <span class="codigo">F18</span>
 </div>
 
 <p class="sub">Renueva la vigencia de la suscripción seleccionada.</p>

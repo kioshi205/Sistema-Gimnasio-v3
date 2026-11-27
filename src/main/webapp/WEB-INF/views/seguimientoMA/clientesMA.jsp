@@ -6,7 +6,7 @@
 
 <div class="titulo-pagina">
     <h1>Seguimiento de clientes</h1>
-    <span class="codigo">SOPORTE 02</span>
+    <span class="codigo">F14</span>
 </div>
 
 <p class="sub">Consulta y administra la información de los clientes registrados.</p>

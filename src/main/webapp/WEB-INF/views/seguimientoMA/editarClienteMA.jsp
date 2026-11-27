@@ -6,7 +6,7 @@
 
 <div class="titulo-pagina">
     <h1>Actualizar cliente</h1>
-    <span class="codigo">CLIENTES</span>
+    <span class="codigo">F15</span>
 </div>
 
 <p class="sub">Modifica la información personal del cliente.</p>
