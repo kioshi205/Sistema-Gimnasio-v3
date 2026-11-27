@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -25,6 +26,15 @@
             </c:choose>
 
             <c:choose>
+                <c:when test="${fn:startsWith(rutaActual, '/gestion-planes')}">
+                    <a class="activo" href="${pageContext.request.contextPath}/gestion-planes">GESTION DE PLANES</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/gestion-planes">GESTION DE PLANES</a>
+                </c:otherwise>
+            </c:choose>
+
+            <c:choose>
                 <c:when test="${rutaActual == '/categorias' or rutaActual == '/categorias/registrar' or rutaActual == '/categorias/editar'}">
                     <a class="activo" href="${pageContext.request.contextPath}/categorias">CATEGORÍAS</a>
                 </c:when>
@@ -45,7 +55,6 @@
             <%-- Enlaces para que el equipo descomente cuando termine su módulo:
             <a href="${pageContext.request.contextPath}/suscripciones">Suscripciones</a>
             <a href="${pageContext.request.contextPath}/clientes">Clientes</a>
-            <a href="${pageContext.request.contextPath}/gestion-planes">Gestión de Planes</a>
             <a href="${pageContext.request.contextPath}/subproductos">Subproductos</a>
             <a href="${pageContext.request.contextPath}/categorias">Categorías</a>
             <a href="${pageContext.request.contextPath}/acceso">Control de Acceso</a>
