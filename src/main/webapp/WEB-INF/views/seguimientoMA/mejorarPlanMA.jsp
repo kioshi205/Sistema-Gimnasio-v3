@@ -7,7 +7,7 @@
 
 <div class="titulo-pagina">
     <h1>Mejorar plan de suscripción</h1>
-    <span class="codigo">PLANES</span>
+    <span class="codigo">F19</span>
 </div>
 
 <p class="sub">Selecciona un plan superior y agrega servicios adicionales.</p>

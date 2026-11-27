@@ -7,7 +7,7 @@
 
 <div class="titulo-pagina">
     <h1>Historial del cliente</h1>
-    <span class="codigo">HISTORIAL</span>
+    <span class="codigo">F17</span>
 </div>
 
 <p class="sub">Consulta los registros de suscripción del cliente.</p>

@@ -7,7 +7,7 @@
 
 <div class="titulo-pagina">
     <h1>Seguimiento de suscripciones</h1>
-    <span class="codigo">SOPORTE 02</span>
+    <span class="codigo">F16</span>
 </div>
 
 <p class="sub">Consulta la vigencia y administra las suscripciones de los clientes.</p>
