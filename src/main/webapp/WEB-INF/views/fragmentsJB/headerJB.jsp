@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,9 +14,6 @@
     <aside class="lateral">
         <div class="marca">GIMNASIO</div>
         <nav class="lateral-menu">
-            <a class="${menuActivo eq 'planes' ? '' : 'activo'}" href="${pageContext.request.contextPath}/planes">SUSCRIPCION</a>
-            <a class="${menuActivo eq 'planes' ? 'activo' : ''}" href="${pageContext.request.contextPath}/gestion-planes">GESTION DE PLANES
-            </a>
             <c:set var="rutaActual" value="${requestScope['jakarta.servlet.forward.servlet_path']}"/>
 
             <c:choose>
@@ -24,6 +22,15 @@
                 </c:when>
                 <c:otherwise>
                     <a href="${pageContext.request.contextPath}/planes">SUSCRIPCION</a>
+                </c:otherwise>
+            </c:choose>
+
+            <c:choose>
+                <c:when test="${fn:startsWith(rutaActual, '/gestion-planes')}">
+                    <a class="activo" href="${pageContext.request.contextPath}/gestion-planes">GESTION DE PLANES</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/gestion-planes">GESTION DE PLANES</a>
                 </c:otherwise>
             </c:choose>
 

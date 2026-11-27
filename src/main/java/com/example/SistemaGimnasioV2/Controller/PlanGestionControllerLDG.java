@@ -23,7 +23,6 @@ public class PlanGestionControllerLDG {
 
     @GetMapping("/gestion-planes")
     public String listar(Model model) {
-        model.addAttribute("menuActivo", "planes");
         model.addAttribute("planes", servicio.listarPlanes());
         return "PlanesJB/gestionLDG";
     }
@@ -38,7 +37,6 @@ public class PlanGestionControllerLDG {
             return "redirect:/gestion-planes";
         }
 
-        model.addAttribute("menuActivo", "planes");
         model.addAttribute("plan", plan);
         model.addAttribute("subproductos", servicio.listarSubproductos());
         model.addAttribute("idsSeleccionados", servicio.listarIdsSubproductos(idPlan));
