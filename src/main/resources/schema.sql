@@ -66,11 +66,13 @@ CREATE TABLE IF NOT EXISTS SUSCRIPCION (
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE NOT NULL,
     monto_total DECIMAL(8,2) NOT NULL,
+    meses_consecutivos INT DEFAULT 1 NOT NULL,
     CONSTRAINT fk_suscripcion_cliente FOREIGN KEY (id_cliente) REFERENCES CLIENTE(id_cliente),
     CONSTRAINT fk_suscripcion_plan FOREIGN KEY (id_plan) REFERENCES PLAN(id_plan),
     CONSTRAINT fk_suscripcion_cupon FOREIGN KEY (id_cupon) REFERENCES CUPON(id_cupon),
     CONSTRAINT chk_suscripcion_fechas CHECK (fecha_fin > fecha_inicio),
-    CONSTRAINT chk_suscripcion_monto CHECK (monto_total >= 0)
+    CONSTRAINT chk_suscripcion_monto CHECK (monto_total >= 0),
+    CONSTRAINT chk_suscripcion_meses CHECK (meses_consecutivos >= 0)
     );
 
 CREATE TABLE IF NOT EXISTS MARCACION_ACCESO (
