@@ -14,8 +14,7 @@ import java.util.List;
 @Controller
 public class OperacionControllerJLHA {
 
-    // Destinos de los botones de acceso rápido cuando el acceso es DENEGADO.
-    // INT18 (renovar) la implementa otro módulo: ajusta esta ruta cuando exista.
+
     private static final String RUTA_RENOVAR_INT18 = "/suscripciones";
     private static final String RUTA_PLANES_INT01 = "/planes";
 
@@ -25,7 +24,6 @@ public class OperacionControllerJLHA {
         this.servicio = servicio;
     }
 
-    // ===================== INT20 - Control de acceso =====================
 
     @GetMapping("/acceso")
     public String pantallaAcceso(Model model) {
@@ -35,14 +33,14 @@ public class OperacionControllerJLHA {
         return "AccesoJLHA/controlJLHA";
     }
 
-    // POST-redirect-GET: recargar la página no vuelve a registrar la marcación.
+
     @PostMapping("/acceso/verificar")
     public String verificarAcceso(@RequestParam String dni, RedirectAttributes flash) {
         flash.addFlashAttribute("resultado", servicio.verificar(dni));
         return "redirect:/acceso";
     }
 
-    // ===================== INT21 - Cupones =====================
+
 
     @GetMapping("/cupones/nuevo")
     public String formularioCupon(Model model) {
@@ -60,7 +58,7 @@ public class OperacionControllerJLHA {
                                RedirectAttributes flash) {
         List<String> errores = servicio.crearCupon(codigo, descripcion, fechaInicio, fechaFin);
         if (!errores.isEmpty()) {
-            // Se vuelve a mostrar el formulario; los valores se recuperan de ${param.*}
+
             model.addAttribute("errores", errores);
             model.addAttribute("cupones", servicio.listarCupones());
             model.addAttribute("porcentajeCupon", OperacionServiceJLHA.PORCENTAJE_CUPON_RN01);
@@ -71,9 +69,9 @@ public class OperacionControllerJLHA {
         return "redirect:/cupones/nuevo";
     }
 
-    // ===================== Métricas de ganancias =====================
 
-    /** desde y hasta son meses con formato yyyy-MM (opcionales). */
+
+
     @GetMapping("/metricas")
     public String metricas(@RequestParam(required = false) String desde,
                            @RequestParam(required = false) String hasta,

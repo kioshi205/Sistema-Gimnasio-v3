@@ -43,7 +43,7 @@ public class SubproductoServiceLV {
         return repo.buscarPorId(idSubproducto);
     }
 
-    // RN02: baja lógica, nunca se elimina el subproducto
+
     public void desactivar(int idSubproducto) {
         cambiarEstado(idSubproducto, "INACTIVO");
     }
@@ -60,7 +60,7 @@ public class SubproductoServiceLV {
         }
     }
 
-    // RN02: usa el método de main para saber qué planes quedan bloqueados
+
     public List<String> listarPlanesBloqueados(int idSubproducto) {
         List<Integer> idsPlanes = repo.listarIdsPlanesPorSubproducto(idSubproducto);
         List<String> nombres = new ArrayList<>();
