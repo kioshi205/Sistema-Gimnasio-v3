@@ -2,7 +2,7 @@ package com.example.SistemaGimnasioV2.modelJLHA;
 
 import java.math.BigDecimal;
 
-/** Resumen de un mes: ganancia, suscripciones vendidas, ticket promedio y ganancia acumulada. */
+
 public class FilaMesJLHA {
 
     private String etiqueta;

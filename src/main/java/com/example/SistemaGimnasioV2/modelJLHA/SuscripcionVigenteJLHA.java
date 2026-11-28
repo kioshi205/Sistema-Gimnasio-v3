@@ -2,7 +2,7 @@ package com.example.SistemaGimnasioV2.modelJLHA;
 
 import java.time.LocalDate;
 
-/** Datos mínimos de la suscripción vigente de un cliente (INT20). */
+
 public class SuscripcionVigenteJLHA {
 
     private int idSuscripcion;

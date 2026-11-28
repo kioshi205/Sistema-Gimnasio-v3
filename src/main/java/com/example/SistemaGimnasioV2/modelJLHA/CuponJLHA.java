@@ -4,10 +4,7 @@ import com.example.SistemaGimnasioV2.modelJB.CuponJB;
 
 import java.time.LocalDate;
 
-/**
- * Cupón de INT21: reutiliza CuponJB (tabla CUPON) y añade cuántas veces fue canjeado,
- * para mostrar si sigue disponible según RN01 (activo, vigente y no utilizado).
- */
+
 public class CuponJLHA extends CuponJB {
 
     private int usos;
@@ -20,7 +17,7 @@ public class CuponJLHA extends CuponJB {
         this.usos = usos;
     }
 
-    /** Situación del cupón hoy: DISPONIBLE, USADO, VENCIDO, POR INICIAR o INACTIVO. */
+
     public String getSituacion() {
         LocalDate hoy = LocalDate.now();
         if (!"ACTIVO".equals(getEstado())) {

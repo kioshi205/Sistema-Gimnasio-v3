@@ -3,7 +3,7 @@ package com.example.SistemaGimnasioV2.modelJLHA;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/** Fila de la tabla MARCACION_ACCESO con el nombre del socio, para el historial de INT20. */
+
 public class MarcacionAccesoJLHA {
 
     private int idAcceso;
