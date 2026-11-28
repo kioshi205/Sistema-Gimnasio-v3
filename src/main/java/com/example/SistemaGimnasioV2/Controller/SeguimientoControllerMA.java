@@ -49,7 +49,9 @@ public class SeguimientoControllerMA {
             @RequestParam(required = false) String email,
             RedirectAttributes ra) {
 
-        String error = service.actualizarCliente(idCliente, dni, nombre, apellido, telefono, email);
+        String error = service.actualizarCliente(
+                idCliente, dni, nombre, apellido, telefono, email
+        );
 
         if (error != null) {
             ra.addFlashAttribute("error", error);
@@ -90,6 +92,7 @@ public class SeguimientoControllerMA {
 
     @GetMapping("/renovar/{id}")
     public String renovar(@PathVariable int id, Model model, RedirectAttributes ra) {
+
         Map<String, Object> suscripcion = service.buscarSuscripcion(id);
 
         if (suscripcion == null) {
@@ -97,14 +100,28 @@ public class SeguimientoControllerMA {
             return "redirect:/seguimiento/suscripciones";
         }
 
-        String estado = String.valueOf(suscripcion.get("ESTADO_SUSCRIPCION"));
+        String estado = String.valueOf(
+                suscripcion.get("ESTADO_SUSCRIPCION")
+        );
 
         if (!"Vencida".equals(estado) && !"Por vencer".equals(estado)) {
-            ra.addFlashAttribute("error", "Solo se pueden renovar suscripciones por vencer o vencidas.");
+            ra.addFlashAttribute(
+                    "error",
+                    "Solo se pueden renovar suscripciones por vencer o vencidas."
+            );
             return "redirect:/seguimiento/suscripciones";
         }
 
+        Map<String, Object> resumen = service.obtenerResumenRenovacion(id);
+
+        System.out.println("========== RESUMEN F18 ==========");
+        System.out.println("SUSCRIPCION: " + suscripcion);
+        System.out.println("RESUMEN: " + resumen);
+        System.out.println("=================================");
+
         model.addAttribute("suscripcion", suscripcion);
+        model.addAttribute("resumen", resumen);
+
         return "seguimientoMA/renovarSuscripcionMA";
     }
 
@@ -118,7 +135,10 @@ public class SeguimientoControllerMA {
         if (error != null) {
             ra.addFlashAttribute("error", error);
         } else {
-            ra.addFlashAttribute("mensaje", "La suscripción se renovó correctamente.");
+            ra.addFlashAttribute(
+                    "mensaje",
+                    "La renovación se registró correctamente. Se creó una nueva suscripción."
+            );
         }
 
         return "redirect:/seguimiento/suscripciones";
@@ -126,6 +146,7 @@ public class SeguimientoControllerMA {
 
     @GetMapping("/mejorar/{id}")
     public String mejorar(@PathVariable int id, Model model, RedirectAttributes ra) {
+
         Map<String, Object> suscripcion = service.buscarSuscripcion(id);
 
         if (suscripcion == null) {
@@ -138,7 +159,10 @@ public class SeguimientoControllerMA {
         model.addAttribute("suscripcion", suscripcion);
         model.addAttribute("planes", service.listarPlanesMayores(monto));
         model.addAttribute("subproductos", service.listarSubproductos());
-        model.addAttribute("subproductosActuales", service.obtenerSubproductosActuales(suscripcion));
+        model.addAttribute(
+                "subproductosActuales",
+                service.obtenerSubproductosActuales(suscripcion)
+        );
 
         return "seguimientoMA/mejorarPlanMA";
     }
@@ -150,7 +174,9 @@ public class SeguimientoControllerMA {
             @RequestParam(required = false) String[] adicionales,
             RedirectAttributes ra) {
 
-        String error = service.mejorarPlan(idSuscripcion, idPlanNuevo, adicionales);
+        String error = service.mejorarPlan(
+                idSuscripcion, idPlanNuevo, adicionales
+        );
 
         if (error != null) {
             ra.addFlashAttribute("error", error);

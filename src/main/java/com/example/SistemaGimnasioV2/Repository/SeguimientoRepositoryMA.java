@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Types;
 import java.util.*;
 
 @Repository
@@ -20,7 +21,10 @@ public class SeguimientoRepositoryMA {
         Map<String, Object> datos = new LinkedHashMap<>();
 
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-            datos.put(rs.getMetaData().getColumnLabel(i).toUpperCase(), rs.getObject(i));
+            datos.put(
+                    rs.getMetaData().getColumnLabel(i).toUpperCase(),
+                    rs.getObject(i)
+            );
         }
 
         return datos;
@@ -107,7 +111,10 @@ public class SeguimientoRepositoryMA {
         return cantidad != null && cantidad > 0;
     }
 
-    public List<Map<String, Object>> listarSuscripciones(String buscar, String estado) {
+    public List<Map<String, Object>> listarSuscripciones(
+            String buscar,
+            String estado) {
+
         String texto = buscar == null ? "" : buscar.trim();
         String filtroEstado = estado == null ? "" : estado.trim();
 
@@ -123,6 +130,7 @@ public class SeguimientoRepositoryMA {
                    S.FECHA_INICIO,
                    S.FECHA_FIN,
                    S.MONTO_TOTAL,
+                   S.MESES_CONSECUTIVOS,
                    CASE
                        WHEN S.FECHA_FIN < CURRENT_DATE THEN 'Vencida'
                        WHEN S.FECHA_FIN <= DATEADD('DAY', 7, CURRENT_DATE) THEN 'Por vencer'
@@ -160,20 +168,31 @@ public class SeguimientoRepositoryMA {
     }
 
     public Map<String, Object> buscarSuscripcion(int id) {
+
         List<Map<String, Object>> lista = jdbc.query("""
-            SELECT S.*,
-                   C.DNI,
-                   C.NOMBRE,
-                   C.APELLIDO,
-                   C.TELEFONO,
-                   C.EMAIL,
-                   COALESCE(P.NOMBRE_PLAN, 'Personalizado') AS NOMBRE_PLAN,
-                   COALESCE(P.DURACION_DIAS, 30) AS DURACION_DIAS,
-                   CASE
-                       WHEN S.FECHA_FIN < CURRENT_DATE THEN 'Vencida'
-                       WHEN S.FECHA_FIN <= DATEADD('DAY', 7, CURRENT_DATE) THEN 'Por vencer'
-                       ELSE 'Vigente'
-                   END AS ESTADO_SUSCRIPCION
+            SELECT
+                S.ID_SUSCRIPCION AS ID_SUSCRIPCION,
+                S.ID_CLIENTE AS ID_CLIENTE,
+                S.ID_PLAN AS ID_PLAN,
+                S.ID_CUPON AS ID_CUPON,
+                S.DETALLE AS DETALLE,
+                S.FECHA_INICIO AS FECHA_INICIO,
+                S.FECHA_FIN AS FECHA_FIN,
+                S.MONTO_TOTAL AS MONTO_TOTAL,
+                S.MESES_CONSECUTIVOS AS MESES_CONSECUTIVOS,
+                C.DNI AS DNI,
+                C.NOMBRE AS NOMBRE,
+                C.APELLIDO AS APELLIDO,
+                C.TELEFONO AS TELEFONO,
+                C.EMAIL AS EMAIL,
+                COALESCE(P.NOMBRE_PLAN, 'Personalizado') AS NOMBRE_PLAN,
+                COALESCE(P.DURACION_DIAS, 30) AS DURACION_DIAS,
+                P.PRECIO_BASE AS PRECIO_BASE,
+                CASE
+                    WHEN S.FECHA_FIN < CURRENT_DATE THEN 'Vencida'
+                    WHEN S.FECHA_FIN <= DATEADD('DAY', 7, CURRENT_DATE) THEN 'Por vencer'
+                    ELSE 'Vigente'
+                END AS ESTADO_SUSCRIPCION
             FROM SUSCRIPCION S
             INNER JOIN CLIENTE C ON C.ID_CLIENTE = S.ID_CLIENTE
             LEFT JOIN PLAN P ON P.ID_PLAN = S.ID_PLAN
@@ -194,6 +213,7 @@ public class SeguimientoRepositoryMA {
                    S.FECHA_INICIO,
                    S.FECHA_FIN,
                    S.MONTO_TOTAL,
+                   S.MESES_CONSECUTIVOS,
                    CASE
                        WHEN S.FECHA_FIN < CURRENT_DATE THEN 'Vencida'
                        WHEN S.FECHA_FIN <= DATEADD('DAY', 7, CURRENT_DATE) THEN 'Por vencer'
@@ -268,18 +288,39 @@ public class SeguimientoRepositoryMA {
         return lista.isEmpty() ? null : lista.get(0);
     }
 
-    public int actualizarRenovacion(int idSuscripcion, java.sql.Date inicio, java.sql.Date fin) {
+    // Actualiza la suscripción existente al renovarla.
+    public int actualizarRenovacion(
+            int idSuscripcion,
+            String detalle,
+            java.sql.Date inicio,
+            java.sql.Date fin,
+            double monto,
+            int mesesConsecutivos) {
+
         return jdbc.update("""
             UPDATE SUSCRIPCION
-            SET FECHA_INICIO = ?,
-                FECHA_FIN = ?
+            SET DETALLE = ?,
+                FECHA_INICIO = ?,
+                FECHA_FIN = ?,
+                MONTO_TOTAL = ?,
+                MESES_CONSECUTIVOS = ?
             WHERE ID_SUSCRIPCION = ?
             """,
-                inicio, fin, idSuscripcion
+                detalle,
+                inicio,
+                fin,
+                monto,
+                mesesConsecutivos,
+                idSuscripcion
         );
     }
 
-    public int actualizarMejora(int idSuscripcion, int idPlan, String detalle, double monto) {
+    public int actualizarMejora(
+            int idSuscripcion,
+            int idPlan,
+            String detalle,
+            double monto) {
+
         return jdbc.update("""
             UPDATE SUSCRIPCION
             SET ID_PLAN = ?,

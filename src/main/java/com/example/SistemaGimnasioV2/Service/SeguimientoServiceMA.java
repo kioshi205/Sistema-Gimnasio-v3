@@ -3,6 +3,7 @@ package com.example.SistemaGimnasioV2.Service;
 
 import com.example.SistemaGimnasioV2.Repository.SeguimientoRepositoryMA;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -25,7 +26,8 @@ public class SeguimientoServiceMA {
         return repo.buscarCliente(id);
     }
 
-    public List<Map<String, Object>> listarSuscripciones(String buscar, String estado) {
+    public List<Map<String, Object>> listarSuscripciones(
+            String buscar, String estado) {
         return repo.listarSuscripciones(buscar, estado);
     }
 
@@ -57,11 +59,13 @@ public class SeguimientoServiceMA {
             return "El DNI debe contener 8 dígitos.";
         }
 
-        if (nombre == null || nombre.isBlank() || apellido == null || apellido.isBlank()) {
+        if (nombre == null || nombre.isBlank()
+                || apellido == null || apellido.isBlank()) {
             return "El nombre y apellido son obligatorios.";
         }
 
-        if (telefono != null && !telefono.isBlank() && !telefono.trim().matches("\\d{9}")) {
+        if (telefono != null && !telefono.isBlank()
+                && !telefono.trim().matches("\\d{9}")) {
             return "El teléfono debe contener 9 dígitos.";
         }
 
@@ -94,30 +98,165 @@ public class SeguimientoServiceMA {
         return null;
     }
 
+    // RESUMEN DE RENOVACIÓN F18
+    public Map<String, Object> obtenerResumenRenovacion(int id) {
+
+        Map<String, Object> suscripcion = repo.buscarSuscripcion(id);
+
+        if (suscripcion == null) {
+            return null;
+        }
+
+        LocalDate hoy = LocalDate.now();
+        LocalDate vencimiento = convertirFecha(suscripcion.get("FECHA_FIN"));
+
+        int mesesActuales = obtenerMeses(suscripcion);
+
+        boolean dentroDelPlazo = !hoy.isAfter(vencimiento.plusDays(2));
+
+        int mesesProximos = dentroDelPlazo
+                ? mesesActuales + 1
+                : 1;
+
+        double montoBase = obtenerMontoBase(suscripcion);
+
+        // Descuento del 20% desde 3 meses consecutivos.
+        double porcentajeDescuento =
+                mesesActuales >= 3 ? 20.0 : 0.0;
+
+        double montoDescuento =
+                montoBase * porcentajeDescuento / 100.0;
+
+        double montoFinal = montoBase - montoDescuento;
+
+        Map<String, Object> resumen = new LinkedHashMap<>();
+
+        resumen.put("MESES_ACTUALES", mesesActuales);
+        resumen.put("MESES_PROXIMOS", mesesProximos);
+        resumen.put("PORCENTAJE_DESCUENTO", porcentajeDescuento);
+        resumen.put("MONTO_BASE", montoBase);
+        resumen.put("MONTO_DESCUENTO", montoDescuento);
+        resumen.put("MONTO_FINAL", montoFinal);
+
+        return resumen;
+    }
+
+    // REGISTRAR RENOVACIÓN ACTUALIZANDO LA MISMA FILA
+    @Transactional
     public String renovarSuscripcion(int id) {
+
         Map<String, Object> suscripcion = repo.buscarSuscripcion(id);
 
         if (suscripcion == null) {
             return "No se encontró la suscripción.";
         }
 
-        String estado = String.valueOf(suscripcion.get("ESTADO_SUSCRIPCION"));
+        String estado = String.valueOf(
+                suscripcion.get("ESTADO_SUSCRIPCION")
+        );
 
-        if (!"Vencida".equals(estado) && !"Por vencer".equals(estado)) {
+        if (!"Vencida".equals(estado)
+                && !"Por vencer".equals(estado)) {
             return "Solo se pueden renovar las suscripciones por vencer o vencidas.";
         }
 
-        LocalDate inicio = LocalDate.now();
-        int duracion = ((Number) suscripcion.get("DURACION_DIAS")).intValue();
+        LocalDate hoy = LocalDate.now();
+
+        LocalDate vencimiento =
+                convertirFecha(suscripcion.get("FECHA_FIN"));
+
+        int mesesActuales = obtenerMeses(suscripcion);
+
+        boolean dentroDelPlazo =
+                !hoy.isAfter(vencimiento.plusDays(2));
+
+        int mesesNuevos = dentroDelPlazo
+                ? mesesActuales + 1
+                : 1;
+
+        // Si renueva antes del vencimiento, conserva los días restantes.
+        LocalDate inicio = hoy.isBefore(vencimiento)
+                ? vencimiento
+                : hoy;
+
+        if (!dentroDelPlazo) {
+            inicio = hoy;
+        }
+
+        int duracion =
+                ((Number) suscripcion.get("DURACION_DIAS")).intValue();
+
         LocalDate fin = inicio.plusDays(duracion);
 
+        double montoBase = obtenerMontoBase(suscripcion);
+
+        // Descuento del 20% desde 3 meses consecutivos.
+        double montoFinal = mesesActuales >= 3
+                ? montoBase * 0.80
+                : montoBase;
+
+        String detalle = suscripcion.get("DETALLE") == null
+                ? ""
+                : String.valueOf(suscripcion.get("DETALLE"));
+
+        // Actualiza el registro existente, conservando su ID.
         int resultado = repo.actualizarRenovacion(
                 id,
+                detalle,
                 Date.valueOf(inicio),
-                Date.valueOf(fin)
+                Date.valueOf(fin),
+                montoFinal,
+                mesesNuevos
         );
 
-        return resultado > 0 ? null : "No se pudo renovar la suscripción.";
+        return resultado > 0
+                ? null
+                : "No se pudo actualizar la renovación.";
+    }
+
+    private LocalDate convertirFecha(Object valor) {
+
+        if (valor instanceof Date fecha) {
+            return fecha.toLocalDate();
+        }
+
+        if (valor instanceof java.sql.Timestamp fecha) {
+            return fecha.toLocalDateTime().toLocalDate();
+        }
+
+        if (valor instanceof LocalDate fecha) {
+            return fecha;
+        }
+
+        return LocalDate.parse(String.valueOf(valor));
+    }
+
+    // Lee MESES_CONSECUTIVOS directamente de la base de datos.
+    private int obtenerMeses(Map<String, Object> suscripcion) {
+
+        Object valor = suscripcion.get("MESES_CONSECUTIVOS");
+
+        if (valor == null) {
+            return 1;
+        }
+
+        return ((Number) valor).intValue();
+    }
+
+    private double obtenerMontoBase(Map<String, Object> suscripcion) {
+
+        Object precioPlan = suscripcion.get("PRECIO_BASE");
+
+        if (precioPlan != null) {
+            return ((Number) precioPlan).doubleValue();
+        }
+
+        // Para un plan personalizado usa el monto actual.
+        Object montoTotal = suscripcion.get("MONTO_TOTAL");
+
+        return montoTotal == null
+                ? 0.0
+                : ((Number) montoTotal).doubleValue();
     }
 
     public List<Map<String, Object>> obtenerSubproductosActuales(
@@ -132,6 +271,7 @@ public class SeguimientoServiceMA {
         }
 
         List<Map<String, Object>> resultado = new ArrayList<>();
+
         Object valorDetalle = suscripcion.get("DETALLE");
 
         if (valorDetalle == null) {
@@ -141,17 +281,23 @@ public class SeguimientoServiceMA {
         String detalle = String.valueOf(valorDetalle);
 
         for (String nombre : detalle.split(";")) {
+
             String limpio = nombre.trim();
 
             if (limpio.equalsIgnoreCase("Wifi gratis")) {
                 limpio = "Wifi";
             }
 
-            Map<String, Object> encontrado = repo.buscarSubproductoPorNombre(limpio);
+            Map<String, Object> encontrado =
+                    repo.buscarSubproductoPorNombre(limpio);
 
             if (encontrado != null) {
+
                 boolean existe = resultado.stream().anyMatch(x ->
-                        Objects.equals(x.get("ID_SUBPRODUCTO"), encontrado.get("ID_SUBPRODUCTO"))
+                        Objects.equals(
+                                x.get("ID_SUBPRODUCTO"),
+                                encontrado.get("ID_SUBPRODUCTO")
+                        )
                 );
 
                 if (!existe) {
@@ -163,8 +309,14 @@ public class SeguimientoServiceMA {
         return resultado;
     }
 
-    public String mejorarPlan(int idSuscripcion, int idPlanNuevo, String[] adicionales) {
-        Map<String, Object> suscripcion = repo.buscarSuscripcion(idSuscripcion);
+    // MEJORAR PLAN
+    public String mejorarPlan(
+            int idSuscripcion,
+            int idPlanNuevo,
+            String[] adicionales) {
+
+        Map<String, Object> suscripcion =
+                repo.buscarSuscripcion(idSuscripcion);
 
         if (suscripcion == null) {
             return "No se encontró la suscripción.";
@@ -174,12 +326,16 @@ public class SeguimientoServiceMA {
             return "Solo se puede mejorar una suscripción vigente.";
         }
 
-        double montoActual = ((Number) suscripcion.get("MONTO_TOTAL")).doubleValue();
+        double montoActual =
+                ((Number) suscripcion.get("MONTO_TOTAL")).doubleValue();
 
-        List<Map<String, Object>> planes = repo.listarPlanesMayores(montoActual);
+        List<Map<String, Object>> planes =
+                repo.listarPlanesMayores(montoActual);
 
         Map<String, Object> nuevoPlan = planes.stream()
-                .filter(p -> ((Number) p.get("ID_PLAN")).intValue() == idPlanNuevo)
+                .filter(p ->
+                        ((Number) p.get("ID_PLAN")).intValue() == idPlanNuevo
+                )
                 .findFirst()
                 .orElse(null);
 
@@ -187,24 +343,36 @@ public class SeguimientoServiceMA {
             return "Debes seleccionar un plan con un precio mayor al actual.";
         }
 
-        List<Map<String, Object>> incluidos = repo.listarSubproductosPlan(idPlanNuevo);
+        List<Map<String, Object>> incluidos =
+                repo.listarSubproductosPlan(idPlanNuevo);
 
         Set<Integer> idsIncluidos = new HashSet<>();
+
         List<String> nombres = new ArrayList<>();
 
         for (Map<String, Object> item : incluidos) {
+
             int id = ((Number) item.get("ID_SUBPRODUCTO")).intValue();
+
             idsIncluidos.add(id);
-            nombres.add(String.valueOf(item.get("NOMBRE_SUBPRODUCTO")));
+
+            nombres.add(
+                    String.valueOf(item.get("NOMBRE_SUBPRODUCTO"))
+            );
         }
 
-        double total = ((Number) nuevoPlan.get("PRECIO_BASE")).doubleValue();
+        double total =
+                ((Number) nuevoPlan.get("PRECIO_BASE")).doubleValue();
 
-        List<Map<String, Object>> catalogo = repo.listarSubproductos();
+        List<Map<String, Object>> catalogo =
+                repo.listarSubproductos();
 
         if (adicionales != null) {
+
             for (String valor : adicionales) {
+
                 try {
+
                     int id = Integer.parseInt(valor);
 
                     if (idsIncluidos.contains(id)) {
@@ -212,14 +380,25 @@ public class SeguimientoServiceMA {
                     }
 
                     Map<String, Object> subproducto = catalogo.stream()
-                            .filter(x -> ((Number) x.get("ID_SUBPRODUCTO")).intValue() == id)
+                            .filter(x ->
+                                    ((Number) x.get("ID_SUBPRODUCTO")).intValue() == id
+                            )
                             .findFirst()
                             .orElse(null);
 
                     if (subproducto != null) {
+
                         idsIncluidos.add(id);
-                        nombres.add(String.valueOf(subproducto.get("NOMBRE_SUBPRODUCTO")));
-                        total += ((Number) subproducto.get("PRECIO_INDIVIDUAL")).doubleValue();
+
+                        nombres.add(
+                                String.valueOf(
+                                        subproducto.get("NOMBRE_SUBPRODUCTO")
+                                )
+                        );
+
+                        total += ((Number)
+                                subproducto.get("PRECIO_INDIVIDUAL"))
+                                .doubleValue();
                     }
 
                 } catch (NumberFormatException ignored) {

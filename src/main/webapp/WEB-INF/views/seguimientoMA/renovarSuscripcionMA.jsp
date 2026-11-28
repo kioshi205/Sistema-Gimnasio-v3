@@ -28,7 +28,10 @@
 
     <div class="fila">
         <strong>Cliente</strong>
-        <span><c:out value="${suscripcion['NOMBRE']}"/> <c:out value="${suscripcion['APELLIDO']}"/></span>
+        <span>
+            <c:out value="${suscripcion['NOMBRE']}"/>
+            <c:out value="${suscripcion['APELLIDO']}"/>
+        </span>
     </div>
 
     <div class="fila">
@@ -47,18 +50,74 @@
     </div>
 
     <div class="fila">
+        <strong>Meses consecutivos actuales</strong>
+        <span>
+            <c:out value="${empty resumen['MESES_ACTUALES'] ? 1 : resumen['MESES_ACTUALES']}"/> meses
+        </span>
+    </div>
+
+    <div class="fila">
+        <strong>Meses consecutivos después de renovar</strong>
+        <span>
+            <c:out value="${empty resumen['MESES_PROXIMOS'] ? 1 : resumen['MESES_PROXIMOS']}"/> meses
+        </span>
+    </div>
+
+    <div class="fila">
+        <strong>Descuento por fidelidad</strong>
+        <span>
+            <fmt:formatNumber
+                value="${empty resumen['PORCENTAJE_DESCUENTO'] ? 0 : resumen['PORCENTAJE_DESCUENTO']}"
+                minFractionDigits="0"
+                maxFractionDigits="0"/>%
+        </span>
+    </div>
+
+    <div class="fila">
         <strong>Duración</strong>
         <span><c:out value="${suscripcion['DURACION_DIAS']}"/> días</span>
     </div>
 
     <div class="fila">
-        <strong>Monto</strong>
-        <span>S/ <fmt:formatNumber value="${suscripcion['MONTO_TOTAL']}" minFractionDigits="2"/></span>
+        <strong>Monto base</strong>
+        <span>
+            S/
+            <fmt:formatNumber
+                value="${empty resumen['MONTO_BASE'] ? 0 : resumen['MONTO_BASE']}"
+                minFractionDigits="2"
+                maxFractionDigits="2"/>
+        </span>
+    </div>
+
+    <div class="fila">
+        <strong>Descuento aplicado</strong>
+        <span>
+            S/
+            <fmt:formatNumber
+                value="${empty resumen['MONTO_DESCUENTO'] ? 0 : resumen['MONTO_DESCUENTO']}"
+                minFractionDigits="2"
+                maxFractionDigits="2"/>
+        </span>
+    </div>
+
+    <div class="fila">
+        <strong>Monto final de renovación</strong>
+        <span>
+            <strong>
+                S/
+                <fmt:formatNumber
+                    value="${empty resumen['MONTO_FINAL'] ? 0 : resumen['MONTO_FINAL']}"
+                    minFractionDigits="2"
+                    maxFractionDigits="2"/>
+            </strong>
+        </span>
     </div>
 
     <div class="fila">
         <strong>Estado</strong>
-        <span style="display:inline-block;padding:7px 12px;border-radius:999px;background:#fff1f2;color:#b4233a;font-weight:700;">Vencida</span>
+        <span style="display:inline-block;padding:7px 12px;border-radius:999px;background:#fff1f2;color:#b4233a;font-weight:700;">
+            <c:out value="${suscripcion['ESTADO_SUSCRIPCION']}"/>
+        </span>
     </div>
 </div>
 
@@ -66,11 +125,18 @@
     <h3>Confirmar renovación</h3>
 
     <p class="descripcion">
-        Al confirmar, se actualizarán las fechas de inicio y vencimiento de esta misma suscripción.
+        Al confirmar, se registrará una nueva suscripción conservando el historial anterior.
     </p>
 
     <div class="mensaje-info">
-        No se creará una nueva suscripción. Se conservarán los datos del cliente, el plan y el monto.
+        <c:choose>
+            <c:when test="${not empty resumen && resumen['PORCENTAJE_DESCUENTO'] gt 0}">
+                El cliente cuenta con tres o más meses consecutivos y recibirá un descuento del 20% por fidelidad.
+            </c:when>
+            <c:otherwise>
+                El cliente todavía no alcanza los tres meses consecutivos requeridos. Se aplicará el precio regular.
+            </c:otherwise>
+        </c:choose>
     </div>
 
     <form method="post" action="${pageContext.request.contextPath}/seguimiento/renovar/confirmar">
