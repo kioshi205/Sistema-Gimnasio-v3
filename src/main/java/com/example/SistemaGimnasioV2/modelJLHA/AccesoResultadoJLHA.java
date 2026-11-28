@@ -5,10 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Resultado de verificar un DNI en INT20 (Control y registro de acceso).
- * Es Serializable porque viaja como flash attribute en el patrón POST-redirect-GET.
- */
+
 public class AccesoResultadoJLHA implements Serializable {
 
     public static final String PERMITIDO = "PERMITIDO";

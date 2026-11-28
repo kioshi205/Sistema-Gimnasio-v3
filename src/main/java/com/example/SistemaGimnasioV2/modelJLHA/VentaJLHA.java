@@ -3,7 +3,7 @@ package com.example.SistemaGimnasioV2.modelJLHA;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-/** Una suscripción vendida: fecha de venta, plan (o "Personalizado") y monto cobrado. */
+
 public class VentaJLHA {
 
     private LocalDate fecha;

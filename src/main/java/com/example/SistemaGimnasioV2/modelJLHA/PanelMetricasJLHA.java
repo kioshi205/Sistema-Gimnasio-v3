@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Datos ya calculados para el panel de métricas de ganancias. */
+
 public class PanelMetricasJLHA {
 
     private String desde;            // yyyy-MM
