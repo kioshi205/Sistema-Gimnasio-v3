@@ -25,7 +25,7 @@ public class GimnasioRepositoryJLHA {
         this.jdbc = jdbc;
     }
 
-    // ===================== INT20 - Control de acceso =====================
+
 
     public ClienteJB buscarClientePorDni(String dni) {
         List<ClienteJB> clientes = jdbc.query(
@@ -34,7 +34,7 @@ public class GimnasioRepositoryJLHA {
         return clientes.isEmpty() ? null : clientes.get(0);
     }
 
-    /** Suscripción cuyo rango de fechas incluye "hoy"; si hay varias, la que vence más tarde. */
+
     public SuscripcionVigenteJLHA buscarSuscripcionVigente(int idCliente, LocalDate hoy) {
         List<SuscripcionVigenteJLHA> lista = jdbc.query(
                 "SELECT id_suscripcion, detalle, fecha_fin FROM SUSCRIPCION " +
@@ -45,7 +45,7 @@ public class GimnasioRepositoryJLHA {
         return lista.isEmpty() ? null : lista.get(0);
     }
 
-    /** Inserta una marcación. idSuscripcion es null cuando el resultado es DENEGADO. */
+
     public void insertarMarcacion(int idCliente, Integer idSuscripcion,
                                   LocalDate fecha, LocalTime hora, String resultado) {
         jdbc.update(
@@ -64,7 +64,7 @@ public class GimnasioRepositoryJLHA {
                 new BeanPropertyRowMapper<>(MarcacionAccesoJLHA.class), limite);
     }
 
-    // ===================== INT21 - Cupones =====================
+
 
     public boolean existeCodigo(String codigo) {
         Integer cantidad = jdbc.queryForObject(
@@ -72,7 +72,7 @@ public class GimnasioRepositoryJLHA {
         return cantidad != null && cantidad > 0;
     }
 
-    /** Inserta el cupón con estado ACTIVO. */
+
     public void insertarCupon(CuponJLHA c) {
         jdbc.update(
                 "INSERT INTO CUPON (codigo, descripcion, porcentaje_descuento, fecha_inicio, fecha_fin, estado) " +
@@ -89,9 +89,9 @@ public class GimnasioRepositoryJLHA {
                 new BeanPropertyRowMapper<>(CuponJLHA.class));
     }
 
-    // ===================== Métricas de ganancias =====================
 
-    /** Las ganancias salen de SUSCRIPCION.monto_total, fechadas por fecha_inicio. Sin plan = Personalizado. */
+
+
     public List<VentaJLHA> listarVentas(LocalDate desde, LocalDate hasta) {
         return jdbc.query(
                 "SELECT s.fecha_inicio AS fecha, COALESCE(p.nombre_plan, 'Personalizado') AS plan, " +

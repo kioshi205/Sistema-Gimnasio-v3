@@ -24,14 +24,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Operación diaria y promociones (JLHA):
- * INT20 control de acceso, INT21 cupones y las 4 métricas de ganancias.
- */
+
 @Service
 public class OperacionServiceJLHA {
 
-    /** RN01: los cupones promocionales que se crean en INT21 siempre otorgan 25% de descuento. */
+
     public static final int PORCENTAJE_CUPON_RN01 = 25;
 
     private final GimnasioRepositoryJLHA repo;
@@ -40,16 +37,7 @@ public class OperacionServiceJLHA {
         this.repo = repo;
     }
 
-    // ===================== INT20 - Control de acceso =====================
 
-
-
-
-    /**
-     * Verifica el DNI y, si el cliente existe, registra la marcación:
-     * PERMITIDO (con id_suscripcion) o DENEGADO (id_suscripcion = NULL).
-     * Si el DNI no existe no se inserta nada.
-     */
     public AccesoResultadoJLHA verificar(String dniIngresado) {
         String dni = dniIngresado == null ? "" : dniIngresado.trim();
         AccesoResultadoJLHA r = new AccesoResultadoJLHA();
@@ -93,7 +81,7 @@ public class OperacionServiceJLHA {
         return repo.ultimasMarcaciones(8);
     }
 
-    /** El detalle de la suscripción guarda los servicios separados por ";". */
+
     private List<String> separarServicios(String detalle) {
         List<String> lista = new ArrayList<>();
         if (detalle != null) {
@@ -106,7 +94,7 @@ public class OperacionServiceJLHA {
         return lista;
     }
 
-    // ===================== INT21 - Cupones =====================
+
 
 
 
@@ -115,11 +103,7 @@ public class OperacionServiceJLHA {
         return repo.listarCupones();
     }
 
-    /**
-     * Valida los datos del formulario y, si todo es correcto, inserta el cupón como ACTIVO.
-     * Devuelve la lista de errores (vacía cuando el cupón se guardó).
-     * Los valores llegan como texto para poder dar mensajes claros ante datos mal escritos.
-     */
+
     public List<String> crearCupon(String codigo, String descripcion,
                               String fechaInicio, String fechaFin) {
         List<String> errores = new ArrayList<>();
@@ -162,13 +146,13 @@ public class OperacionServiceJLHA {
         try {
             repo.insertarCupon(cupon);
         } catch (DuplicateKeyException e) {
-            // dos recepcionistas guardando el mismo código a la vez
+
             errores.add("El código \"" + cod + "\" ya existe. Elige otro código promocional.");
         }
         return errores;
     }
 
-    /** Código tal como se guardó (mayúsculas y sin espacios), para el mensaje de confirmación. */
+
     public String normalizarCodigo(String codigo) {
         return texto(codigo).toUpperCase();
     }
@@ -186,7 +170,7 @@ public class OperacionServiceJLHA {
         return valor == null ? "" : valor.trim();
     }
 
-    // ===================== Métricas de ganancias =====================
+
 
 
     private static final int MESES_POR_DEFECTO = 6;
@@ -256,7 +240,7 @@ public class OperacionServiceJLHA {
         panel.setTotalSuscripciones(totalSusc);
         panel.setTicketPromedio(promedio(acumulado, totalSusc));
 
-        // Planes ordenados de mayor a menor ganancia total; "Personalizado" siempre al final.
+
         List<Map.Entry<String, BigDecimal[]>> planes = new ArrayList<>(porPlan.entrySet());
         planes.sort((a, b) -> {
             boolean pa = "Personalizado".equals(a.getKey());
@@ -276,7 +260,7 @@ public class OperacionServiceJLHA {
         return panel;
     }
 
-    /** JSON que consume metricasJLHA.js (se arma a mano para no depender de otra librería). */
+
     public String aJson(PanelMetricasJLHA p) {
         StringBuilder sb = new StringBuilder("{");
         sb.append("\"labels\":").append(lista(p.getFilas(), f -> jsonTexto(f.getEtiqueta())));
@@ -297,7 +281,7 @@ public class OperacionServiceJLHA {
         return sb.append("]}").toString();
     }
 
-    // ---------- utilidades ----------
+
 
     private YearMonth parsear(String valor, YearMonth porDefecto) {
         if (valor == null || valor.trim().isEmpty()) {

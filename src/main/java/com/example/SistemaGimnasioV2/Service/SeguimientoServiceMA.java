@@ -98,7 +98,7 @@ public class SeguimientoServiceMA {
         return null;
     }
 
-    // RESUMEN DE RENOVACIÓN F18
+
     public Map<String, Object> obtenerResumenRenovacion(int id) {
 
         Map<String, Object> suscripcion = repo.buscarSuscripcion(id);
@@ -120,7 +120,7 @@ public class SeguimientoServiceMA {
 
         double montoBase = obtenerMontoBase(suscripcion);
 
-        // Descuento del 20% desde 3 meses consecutivos.
+
         double porcentajeDescuento =
                 mesesActuales >= 3 ? 20.0 : 0.0;
 
@@ -141,7 +141,7 @@ public class SeguimientoServiceMA {
         return resumen;
     }
 
-    // REGISTRAR RENOVACIÓN ACTUALIZANDO LA MISMA FILA
+
     @Transactional
     public String renovarSuscripcion(int id) {
 
@@ -174,7 +174,7 @@ public class SeguimientoServiceMA {
                 ? mesesActuales + 1
                 : 1;
 
-        // Si renueva antes del vencimiento, conserva los días restantes.
+
         LocalDate inicio = hoy.isBefore(vencimiento)
                 ? vencimiento
                 : hoy;
@@ -190,7 +190,7 @@ public class SeguimientoServiceMA {
 
         double montoBase = obtenerMontoBase(suscripcion);
 
-        // Descuento del 20% desde 3 meses consecutivos.
+
         double montoFinal = mesesActuales >= 3
                 ? montoBase * 0.80
                 : montoBase;
@@ -199,7 +199,7 @@ public class SeguimientoServiceMA {
                 ? ""
                 : String.valueOf(suscripcion.get("DETALLE"));
 
-        // Actualiza el registro existente, conservando su ID.
+
         int resultado = repo.actualizarRenovacion(
                 id,
                 detalle,
@@ -231,7 +231,7 @@ public class SeguimientoServiceMA {
         return LocalDate.parse(String.valueOf(valor));
     }
 
-    // Lee MESES_CONSECUTIVOS directamente de la base de datos.
+
     private int obtenerMeses(Map<String, Object> suscripcion) {
 
         Object valor = suscripcion.get("MESES_CONSECUTIVOS");
@@ -251,7 +251,7 @@ public class SeguimientoServiceMA {
             return ((Number) precioPlan).doubleValue();
         }
 
-        // Para un plan personalizado usa el monto actual.
+
         Object montoTotal = suscripcion.get("MONTO_TOTAL");
 
         return montoTotal == null
@@ -309,7 +309,7 @@ public class SeguimientoServiceMA {
         return resultado;
     }
 
-    // MEJORAR PLAN
+
     public String mejorarPlan(
             int idSuscripcion,
             int idPlanNuevo,

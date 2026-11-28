@@ -30,7 +30,7 @@ public class CategoriaServiceLV {
         return repo.buscarPorId(idCategoria);
     }
 
-    // RN02: baja lógica, nunca se elimina la categoría
+
     public void desactivar(int idCategoria) {
         cambiarEstado(idCategoria, "INACTIVO");
     }
@@ -47,7 +47,7 @@ public class CategoriaServiceLV {
         }
     }
 
-    // RN02: usa el método de main para saber qué planes quedan bloqueados
+
     public List<String> listarPlanesBloqueados(int idCategoria) {
         List<Integer> idsPlanes = repo.listarIdsPlanesPorCategoria(idCategoria);
         List<String> nombres = new ArrayList<>();
